@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon src/main.ts",
     "compose:up": "docker-compose -f docker/docker-compose.yaml up -d",
     "compose:down": "docker-compose -f docker/docker-compose.yaml down -v"
   },
