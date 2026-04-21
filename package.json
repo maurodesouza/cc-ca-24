@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compose:up": "docker-compose -f docker/docker-compose.yaml up -d",
+    "compose:down": "docker-compose -f docker/docker-compose.yaml down -v"
   },
   "keywords": [],
   "author": "",
