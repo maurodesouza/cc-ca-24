@@ -1,10 +1,10 @@
-import { validateCpf } from "../src/validate-cpf";
+import { isValidCpf } from "../src/is-valid-cpf";
 
 test.each([
     "97456321558",
     "87748248800"
 ])("Deve validar um cpf: %s", (cpf: string) => {
-    const isValid = validateCpf(cpf);
+    const isValid = isValidCpf(cpf);
     expect(isValid).toBe(true);
 });
 
@@ -15,6 +15,6 @@ test.each([
     "11111111111",
     "11111111abc"
 ])("Não deve validar um cpf: %s", (cpf: any) => {
-    const isValid = validateCpf(cpf);
+    const isValid = isValidCpf(cpf);
     expect(isValid).toBe(false);
 });

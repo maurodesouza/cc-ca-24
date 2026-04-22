@@ -1,6 +1,6 @@
 const VALID_LENGTH = 11;
 
-export function validateCpf(cpf: string) {
+export function isValidCpf(cpf: string) {
 	if (!cpf) return false;
 
 	cpf = extractOnlyNumbers(cpf);
