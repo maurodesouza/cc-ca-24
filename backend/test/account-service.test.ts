@@ -1,6 +1,8 @@
+import sinon from "sinon";
+
 import { AccountService } from "../src/account-service";
 import { AccountDAOInMemory } from "../src/account-DAO";
-import sinon from "sinon";
+
 import * as mailer from "../src/mailer";
 
 const validInput = {
@@ -19,6 +21,18 @@ beforeEach(() => {
 
 describe("Account", () => {
   test("Deve criar uma conta", async () => {
+    const input = { ...validInput }
+
+    const signupOutput = await accountService.signup(input);
+    const getAccountOutput = await accountService.getAccount(signupOutput.accountId);
+
+    expect(getAccountOutput.accountId).toBe(signupOutput.accountId);
+    expect(getAccountOutput.name).toBe(input.name);
+    expect(getAccountOutput.email).toBe(input.email);
+    expect(getAccountOutput.document).toBe(input.document);
+  });
+
+  test("Deve criar uma conta com stub", async () => {
     const mailerStub = sinon.stub(mailer, "sendEmail").resolves();
 
     const input = { ...validInput }
@@ -32,6 +46,56 @@ describe("Account", () => {
     expect(getAccountOutput.document).toBe(input.document);
 
     mailerStub.restore();
+  });
+
+  test("Deve criar uma conta com spy", async () => {
+    const mailerSpy = sinon.spy(mailer, "sendEmail");
+
+    const input = { ...validInput }
+
+    const signupOutput = await accountService.signup(input);
+    const getAccountOutput = await accountService.getAccount(signupOutput.accountId);
+
+    expect(getAccountOutput.accountId).toBe(signupOutput.accountId);
+    expect(getAccountOutput.name).toBe(input.name);
+    expect(getAccountOutput.email).toBe(input.email);
+    expect(getAccountOutput.document).toBe(input.document);
+
+    expect(mailerSpy.calledOnce).toBe(true);
+    expect(mailerSpy.calledWith({
+      to: input.email,
+      subject: "Account created",
+      body: "Your account has been created"
+    })).toBe(true);
+
+    mailerSpy.restore();
+  });
+
+  test.only("Deve criar uma conta com mock", async () => {
+    const mailerMock = sinon.mock(mailer);
+
+    mailerMock
+      .expects("sendEmail")
+      .once()
+      .withArgs({
+        to: validInput.email,
+        subject: "Account created",
+        body: "Your account has been created"
+      })
+      .resolves();
+
+    const input = { ...validInput }
+
+    const signupOutput = await accountService.signup(input);
+    const getAccountOutput = await accountService.getAccount(signupOutput.accountId);
+
+    expect(getAccountOutput.accountId).toBe(signupOutput.accountId);
+    expect(getAccountOutput.name).toBe(input.name);
+    expect(getAccountOutput.email).toBe(input.email);
+    expect(getAccountOutput.document).toBe(input.document);
+
+    mailerMock.verify()
+    mailerMock.restore();
   });
 
   test("Não deve criar conta com nome invalido", async () => {
