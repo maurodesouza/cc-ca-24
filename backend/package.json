@@ -1,0 +1,31 @@
+{
+  "name": "@cc-ca-24/backend",
+  "version": "1.0.0",
+  "description": "Backend for CC CA 24",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/main.ts",
+    "test": "jest --verbose",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.4",
+
+  "dependencies": {
+    "axios": "^1.10.0",
+    "express": "^5.1.0",
+    "pg-promise": "^11.15.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.4",
+    "nodemon": "^3.1.10",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "5.8.3"
+  }
+}
