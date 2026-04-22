@@ -1,5 +1,7 @@
 import { AccountService } from "../src/account-service";
 import { AccountDAOInMemory } from "../src/account-DAO";
+import sinon from "sinon";
+import * as mailer from "../src/mailer";
 
 const validInput = {
   name: "John Doe",
@@ -17,6 +19,8 @@ beforeEach(() => {
 
 describe("Account", () => {
   test("Deve criar uma conta", async () => {
+    const mailerStub = sinon.stub(mailer, "sendEmail").resolves();
+
     const input = { ...validInput }
 
     const signupOutput = await accountService.signup(input);
@@ -26,6 +30,8 @@ describe("Account", () => {
     expect(getAccountOutput.name).toBe(input.name);
     expect(getAccountOutput.email).toBe(input.email);
     expect(getAccountOutput.document).toBe(input.document);
+
+    mailerStub.restore();
   });
 
   test("Não deve criar conta com nome invalido", async () => {

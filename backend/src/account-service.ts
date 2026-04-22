@@ -5,6 +5,7 @@ import { isValidEmail } from "./is-valid-email";
 import { isValidPassword } from "./is-valid-password";
 import { isValidCpf } from "./is-valid-cpf";
 import { AccountDAO } from "./account-DAO";
+import { sendEmail } from "./mailer";
 
 export class AccountService {
   accountDAO: AccountDAO;
@@ -39,6 +40,12 @@ export class AccountService {
     }
 
     await this.accountDAO.save(account);
+
+    await sendEmail({
+      to: account.email,
+      subject: "Account created",
+      body: "Your account has been created"
+    });
 
     return account
   }
