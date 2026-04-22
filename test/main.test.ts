@@ -1,5 +1,7 @@
 import axios from "axios";
 
+axios.defaults.validateStatus = () => true;
+
 const validInput = {
   name: "John Doe",
   email: "john.doe@example.com",
@@ -30,16 +32,11 @@ describe("Account", () => {
       name: "John",
     }
 
-    await expect(
-      axios.post("http://localhost:3000/signup", input)
-    ).rejects.toMatchObject({
-      response: {
-        status: 400,
-        data: {
-          message: "Invalid name"
-        }
-      }
-    });
+    const response = await axios.post("http://localhost:3000/signup", input)
+
+
+    expect(response.status).toBe(400);
+    expect(response.data.message).toBe("Invalid name");
   })
 
   test("Não deve criar conta com email invalido", async () => {
@@ -48,16 +45,10 @@ describe("Account", () => {
       email: "john.doe"
     }
 
-    await expect(
-      axios.post("http://localhost:3000/signup", input)
-    ).rejects.toMatchObject({
-      response: {
-        status: 400,
-        data: {
-          message: "Invalid email"
-        }
-      }
-    });
+    const response = await axios.post("http://localhost:3000/signup", input)
+
+    expect(response.status).toBe(400);
+    expect(response.data.message).toBe("Invalid email");
   })
 
   test("Não deve criar conta com senha invalida", async () => {
@@ -66,16 +57,10 @@ describe("Account", () => {
       password: "1234567"
     }
 
-    await expect(
-      axios.post("http://localhost:3000/signup", input)
-    ).rejects.toMatchObject({
-      response: {
-        status: 400,
-        data: {
-          message: "Invalid password"
-        }
-      }
-    });
+    const response = await axios.post("http://localhost:3000/signup", input)
+
+    expect(response.status).toBe(400);
+    expect(response.data.message).toBe("Invalid password");
   })
 
   test("Não deve criar conta com documento invalido", async () => {
@@ -84,28 +69,17 @@ describe("Account", () => {
       document: "11111"
     }
 
-    await expect(
-      axios.post("http://localhost:3000/signup", input)
-    ).rejects.toMatchObject({
-      response: {
-        status: 400,
-        data: {
-          message: "Invalid document"
-        }
-      }
-    });
+    const response = await axios.post("http://localhost:3000/signup", input)
+
+    expect(response.status).toBe(400);
+    expect(response.data.message).toBe("Invalid document");
   })
 
   test("Deve retornar 400 ao não encontar uma conta", async () => {
-    await expect(
-      axios.get(`http://localhost:3000/accounts/${crypto.randomUUID()}`)
-    ).rejects.toMatchObject({
-      response: {
-        status: 400,
-        data: {
-          message: "Account not found"
-        }
-      }
-    });
+
+    const response = await axios.get(`http://localhost:3000/accounts/${crypto.randomUUID()}`)
+
+    expect(response.status).toBe(400);
+    expect(response.data.message).toBe("Account not found");
   })
 });
