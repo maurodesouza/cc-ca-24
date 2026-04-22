@@ -6,7 +6,7 @@ import { isValidEmail } from "./is-valid-email";
 import { isValidPassword } from "./is-valid-password";
 import { isValidCpf } from "./is-valid-cpf";
 
-const PORT = 3000;
+const PORT = 4156;
 
 function main() {
   const app = express();

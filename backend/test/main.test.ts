@@ -13,11 +13,11 @@ describe("Account", () => {
   test("Deve criar uma conta", async () => {
     const input = { ...validInput }
 
-    const signupResponse = await axios.post("http://localhost:3000/signup", input);
+    const signupResponse = await axios.post("http://localhost:4156/signup", input);
     expect(signupResponse.status).toBe(201);
     expect(signupResponse.data.accountId).toBeDefined();
 
-    const getAccountResponse = await axios.get(`http://localhost:3000/accounts/${signupResponse.data.accountId}`);
+    const getAccountResponse = await axios.get(`http://localhost:4156/accounts/${signupResponse.data.accountId}`);
 
     expect(getAccountResponse.status).toBe(200);
     expect(getAccountResponse.data.account_id).toBe(signupResponse.data.accountId);
@@ -32,7 +32,7 @@ describe("Account", () => {
       name: "John",
     }
 
-    const response = await axios.post("http://localhost:3000/signup", input)
+    const response = await axios.post("http://localhost:4156/signup", input)
 
 
     expect(response.status).toBe(400);
@@ -45,7 +45,7 @@ describe("Account", () => {
       email: "john.doe"
     }
 
-    const response = await axios.post("http://localhost:3000/signup", input)
+    const response = await axios.post("http://localhost:4156/signup", input)
 
     expect(response.status).toBe(400);
     expect(response.data.message).toBe("Invalid email");
@@ -57,7 +57,7 @@ describe("Account", () => {
       password: "1234567"
     }
 
-    const response = await axios.post("http://localhost:3000/signup", input)
+    const response = await axios.post("http://localhost:4156/signup", input)
 
     expect(response.status).toBe(400);
     expect(response.data.message).toBe("Invalid password");
@@ -69,7 +69,7 @@ describe("Account", () => {
       document: "11111"
     }
 
-    const response = await axios.post("http://localhost:3000/signup", input)
+    const response = await axios.post("http://localhost:4156/signup", input)
 
     expect(response.status).toBe(400);
     expect(response.data.message).toBe("Invalid document");
@@ -77,7 +77,7 @@ describe("Account", () => {
 
   test("Deve retornar 400 ao não encontar uma conta", async () => {
 
-    const response = await axios.get(`http://localhost:3000/accounts/${crypto.randomUUID()}`)
+    const response = await axios.get(`http://localhost:4156/accounts/${crypto.randomUUID()}`)
 
     expect(response.status).toBe(400);
     expect(response.data.message).toBe("Account not found");
