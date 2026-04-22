@@ -1,6 +1,8 @@
 import express from "express";
 import pgp from "pg-promise";
 import crypto from "crypto";
+import cors from "cors";
+
 import { isValidName } from "./is-valid-name";
 import { isValidEmail } from "./is-valid-email";
 import { isValidPassword } from "./is-valid-password";
@@ -11,6 +13,7 @@ const PORT = 4156;
 function main() {
   const app = express();
   app.use(express.json());
+  app.use(cors());
 
   const connection = pgp()("postgres://postgres:postgres@localhost:6543/app");
 
