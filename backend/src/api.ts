@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 
-import { getAccount, signup } from "./service";
+import { AccountService } from "./account-service";
+import { AccountDAODatabase } from "./account-DAO";
 
 const PORT = 4156;
 
@@ -10,10 +11,13 @@ function main() {
   app.use(express.json());
   app.use(cors());
 
+  const accountDAO = new AccountDAODatabase();
+  const accountService = new AccountService(accountDAO);
+
   app.post("/signup", async (req, res) => {
     try {
       const body = req.body;
-      const output = await signup(body);
+      const output = await accountService.signup(body);
 
       return res.status(201).json({ accountId: output.accountId });
     } catch (error: any) {
@@ -24,7 +28,7 @@ function main() {
   app.get("/accounts/:accountId", async (req, res) => {
     try {
       const params = req.params;
-      const output = await getAccount(params.accountId);
+      const output = await accountService.getAccount(params.accountId);
 
       return res.status(200).json(output);
     } catch (error: any) {

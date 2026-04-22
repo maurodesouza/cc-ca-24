@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAccountById, saveAccount } from "../src/data";
+import { AccountDAODatabase } from "../src/account-DAO";
 
 axios.defaults.validateStatus = () => true;
 
@@ -14,9 +14,10 @@ const validInput = {
 test("Deve persistir uma conta no banco de dados", async () => {
   const input = { ...validInput }
 
-  await saveAccount(input);
+  const accountDAO = new AccountDAODatabase();
+  await accountDAO.save(input);
 
-  const getAccountOutput = await getAccountById(input.accountId);
+  const getAccountOutput = await accountDAO.getById(input.accountId);
 
   expect(getAccountOutput.account_id).toBe(input.accountId);
   expect(getAccountOutput.name).toBe(input.name);
