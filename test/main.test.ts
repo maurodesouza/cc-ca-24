@@ -95,4 +95,17 @@ describe("Account", () => {
       }
     });
   })
+
+  test("Deve retornar 400 ao não encontar uma conta", async () => {
+    expect(
+      axios.get(`http://localhost:3000/accounts/${crypto.randomUUID()}`)
+    ).rejects.toMatchObject({
+      response: {
+        status: 400,
+        data: {
+          message: "Account not found"
+        }
+      }
+    });
+  })
 });

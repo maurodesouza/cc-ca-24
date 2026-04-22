@@ -14,7 +14,6 @@ function main() {
 
   const connection = pgp()("postgres://postgres:postgres@localhost:6543/app");
 
-
   app.post("/signup", async (req, res) => {
     if (!isValidName(req.body.name)) {
       return res.status(400).json({ message: "Invalid name" });
@@ -47,6 +46,10 @@ function main() {
 
   app.get("/accounts/:accountId", async (req, res) => {
     const [account] = await connection.query("select * from ccca.account where account_id = $1", [req.params.accountId]);
+
+    if (!account) {
+      return res.status(400).json({ message: "Account not found" });
+    }
 
     res.status(200).json(account);
   });
