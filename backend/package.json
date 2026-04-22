@@ -4,7 +4,7 @@
   "description": "Backend for CC CA 24",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/main.ts",
+    "dev": "nodemon src/api.ts",
     "test": "jest --verbose",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"

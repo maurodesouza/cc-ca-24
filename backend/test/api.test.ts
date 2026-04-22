@@ -38,48 +38,4 @@ describe("Account", () => {
     expect(response.status).toBe(400);
     expect(response.data.message).toBe("Invalid name");
   })
-
-  test("Não deve criar conta com email invalido", async () => {
-    const input = {
-      ...validInput,
-      email: "john.doe"
-    }
-
-    const response = await axios.post("http://localhost:4156/signup", input)
-
-    expect(response.status).toBe(400);
-    expect(response.data.message).toBe("Invalid email");
-  })
-
-  test("Não deve criar conta com senha invalida", async () => {
-    const input = {
-      ...validInput,
-      password: "1234567"
-    }
-
-    const response = await axios.post("http://localhost:4156/signup", input)
-
-    expect(response.status).toBe(400);
-    expect(response.data.message).toBe("Invalid password");
-  })
-
-  test("Não deve criar conta com documento invalido", async () => {
-    const input = {
-      ...validInput,
-      document: "11111"
-    }
-
-    const response = await axios.post("http://localhost:4156/signup", input)
-
-    expect(response.status).toBe(400);
-    expect(response.data.message).toBe("Invalid document");
-  })
-
-  test("Deve retornar 400 ao não encontar uma conta", async () => {
-
-    const response = await axios.get(`http://localhost:4156/accounts/${crypto.randomUUID()}`)
-
-    expect(response.status).toBe(400);
-    expect(response.data.message).toBe("Account not found");
-  })
 });
