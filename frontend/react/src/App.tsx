@@ -41,7 +41,6 @@ function App() {
   return (
     <>
       <section id="center">
-        <h1>Ahhh ... Hellow!??</h1>
         <form onSubmit={handleSubmit}>
           <div>
             <label>Name:</label>
