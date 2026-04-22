@@ -30,7 +30,7 @@ describe("Account", () => {
       name: "John",
     }
 
-    expect(
+    await expect(
       axios.post("http://localhost:3000/signup", input)
     ).rejects.toMatchObject({
       response: {
@@ -48,8 +48,8 @@ describe("Account", () => {
       email: "john.doe"
     }
 
-    expect(
-       axios.post("http://localhost:3000/signup", input)
+    await expect(
+      axios.post("http://localhost:3000/signup", input)
     ).rejects.toMatchObject({
       response: {
         status: 400,
@@ -66,7 +66,7 @@ describe("Account", () => {
       password: "1234567"
     }
 
-    expect(
+    await expect(
       axios.post("http://localhost:3000/signup", input)
     ).rejects.toMatchObject({
       response: {
@@ -81,10 +81,10 @@ describe("Account", () => {
   test("Não deve criar conta com documento invalido", async () => {
     const input = {
       ...validInput,
-      document: "85486231016"
+      document: "11111"
     }
 
-    expect(
+    await expect(
       axios.post("http://localhost:3000/signup", input)
     ).rejects.toMatchObject({
       response: {
@@ -97,7 +97,7 @@ describe("Account", () => {
   })
 
   test("Deve retornar 400 ao não encontar uma conta", async () => {
-    expect(
+    await expect(
       axios.get(`http://localhost:3000/accounts/${crypto.randomUUID()}`)
     ).rejects.toMatchObject({
       response: {
