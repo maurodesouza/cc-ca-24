@@ -71,7 +71,7 @@ describe("Account", () => {
     mailerSpy.restore();
   });
 
-  test.only("Deve criar uma conta com mock", async () => {
+  test("Deve criar uma conta com mock", async () => {
     const mailerMock = sinon.mock(mailer);
 
     mailerMock
