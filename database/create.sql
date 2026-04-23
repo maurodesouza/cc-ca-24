@@ -9,3 +9,11 @@ create table ccca.account (
     document text,
     password text
 );
+
+create table ccca.fund (
+    fund_id uuid primary key,
+
+    account_id uuid,
+    asset_id text,
+    quantity numeric
+);
