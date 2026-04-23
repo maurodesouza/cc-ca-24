@@ -1,11 +1,8 @@
 import crypto from "crypto";
 
-import { isValidName } from "./is-valid-name";
-import { isValidEmail } from "./is-valid-email";
-import { isValidPassword } from "./is-valid-password";
-import { isValidCpf } from "./is-valid-cpf";
-import { AccountDAO } from "./account-DAO";
+import { AccountRepository } from "./account-repository";
 import { sendEmail } from "./mailer";
+import { Account } from "./account";
 
 type Input = {
   name: string;
@@ -23,38 +20,21 @@ type Output = {
 }
 
 export class SignUp {
-  accountDAO: AccountDAO;
+  accountRepository: AccountRepository;
 
-  constructor(accountDAO: AccountDAO) {
-    this.accountDAO = accountDAO;
+  constructor(accountRepository: AccountRepository) {
+    this.accountRepository = accountRepository;
   }
 
   async execute(input: Input): Promise<Output> {
-    const account = {
-      accountId: crypto.randomUUID(),
-      name: input.name,
-      email: input.email,
-      password: input.password,
-      document: input.document
-    }
+    const account = Account.create(
+      input.name,
+      input.email,
+      input.password,
+      input.document
+    );
 
-    if (!isValidName(account.name)) {
-      throw new Error("Invalid name");
-    }
-
-    if (!isValidEmail(account.email)) {
-      throw new Error("Invalid email");
-    }
-
-    if (!isValidPassword(account.password)) {
-      throw new Error("Invalid password");
-    }
-
-    if (!isValidCpf(account.document)) {
-      throw new Error("Invalid document");
-    }
-
-    await this.accountDAO.save(account);
+    await this.accountRepository.save(account);
 
     await sendEmail({
       to: account.email,

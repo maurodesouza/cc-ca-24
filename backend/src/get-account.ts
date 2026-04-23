@@ -1,4 +1,9 @@
-import { AccountDAO } from "./account-DAO";
+import { AccountRepository } from "./account-repository";
+
+type Balance = {
+  assetId: string;
+  quantity: number;
+}
 
 type Output = {
   accountId: string;
@@ -6,28 +11,33 @@ type Output = {
   email: string;
   password: string;
   document: string;
+  balances: Balance[];
 }
 
 export class GetAccount {
-  accountDAO: AccountDAO;
+  accountRepository: AccountRepository;
 
-  constructor(accountDAO: AccountDAO) {
-    this.accountDAO = accountDAO;
+  constructor(accountRepository: AccountRepository) {
+    this.accountRepository = accountRepository;
   }
 
   async execute(accountId: string): Promise<Output> {
-    const account = await this.accountDAO.getById(accountId);
+    const account = await this.accountRepository.getById(accountId);
 
     if (!account) {
       throw new Error("Account not found");
     }
 
     const output = {
-      accountId: account.account_id,
+      accountId: account.accountId,
       name: account.name,
       email: account.email,
       password: account.password,
       document: account.document,
+      balances: account.balances.map(balance => ({
+        assetId: balance.assetId,
+        quantity: balance.quantity
+      })),
     }
 
     return output;

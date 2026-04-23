@@ -1,14 +1,14 @@
 import { GetAccount } from "../src/get-account";
-import { AccountDAODatabase } from "../src/account-DAO";
+import { AccountRepositoryDatabase } from "../src/account-repository";
 import { SignUp } from "../src/signup";
 
 let getAccount: GetAccount;
 let signUp: SignUp;
 
 beforeEach(() => {
-  const accountDAO = new AccountDAODatabase();
-  getAccount = new GetAccount(accountDAO);
-  signUp = new SignUp(accountDAO);
+  const AccountRepository = new AccountRepositoryDatabase();
+  getAccount = new GetAccount(AccountRepository);
+  signUp = new SignUp(AccountRepository);
 });
 
 describe("GetAccount", () => {

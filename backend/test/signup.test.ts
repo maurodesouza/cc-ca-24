@@ -1,7 +1,7 @@
 import sinon from "sinon";
 
 import { SignUp } from "../src/signup";
-import { AccountDAODatabase } from "../src/account-DAO";
+import { AccountRepositoryDatabase } from "../src/account-repository";
 
 import * as mailer from "../src/mailer";
 
@@ -15,8 +15,8 @@ const validInput = {
 let signUp: SignUp;
 
 beforeEach(() => {
-  const accountDAO = new AccountDAODatabase();
-  signUp = new SignUp(accountDAO);
+  const AccountRepository = new AccountRepositoryDatabase();
+  signUp = new SignUp(AccountRepository);
 });
 
 describe("SignUp", () => {

@@ -1,20 +1,21 @@
-import { AccountDAODatabase } from "../src/account-DAO";
+import { AccountRepositoryDatabase } from "../src/account-repository";
 import { Withdraw } from "../src/withdraw";
-import { FundDAOInMemory } from "../src/fund-DAO";
 import { SignUp } from "../src/signup";
 import { Deposit } from "../src/deposit";
+import { GetAccount } from "../src/get-account";
 
 let withdraw: Withdraw;
 let deposit: Deposit;
 let signUp: SignUp;
+let getAccount: GetAccount;
 
 beforeEach(() => {
-  const fundDAO = new FundDAOInMemory();
-  const accountDAO = new AccountDAODatabase();
+  const accountRepository = new AccountRepositoryDatabase();
 
-  withdraw = new Withdraw(fundDAO, accountDAO);
-  deposit = new Deposit(fundDAO, accountDAO);
-  signUp = new SignUp(accountDAO);
+  withdraw = new Withdraw(accountRepository);
+  deposit = new Deposit(accountRepository);
+  signUp = new SignUp(accountRepository);
+  getAccount = new GetAccount(accountRepository);
 });
 
 describe("Withdraw", () => {
@@ -28,25 +29,26 @@ describe("Withdraw", () => {
 
     const accountOutput = await signUp.execute(accountInput);
 
-    const input = {
+    const depositInput = {
       accountId: accountOutput.accountId,
       assetId: "BTC",
       quantity: 1000
     }
 
-    await deposit.execute(input);
+    await deposit.execute(depositInput);
 
-    const fundInput = {
+    const withdrawInput = {
       accountId: accountOutput.accountId,
       assetId: "BTC",
-      quantity: 1000
+      quantity: 500
     }
 
-    const withdrawOutput = await withdraw.execute(fundInput);
+    await withdraw.execute(withdrawInput);
 
-    expect(withdrawOutput.accountId).toBe(fundInput.accountId);
-    expect(withdrawOutput.assetId).toBe(fundInput.assetId);
-    expect(withdrawOutput.quantity).toBe(-fundInput.quantity);
+    const getAccountOutput = await getAccount.execute(accountOutput.accountId);
+
+    expect(getAccountOutput.balances[1].assetId).toBe(withdrawInput.assetId);
+    expect(getAccountOutput.balances[1].quantity).toBe(-withdrawInput.quantity);
   });
 
   test("Não deve criar um saque com conta inexistente", async () => {
@@ -59,7 +61,7 @@ describe("Withdraw", () => {
     await expect(() => withdraw.execute(fundInput)).rejects.toThrow("Account not found");
   });
 
-  test("Não deve criar um saque com asset invalido", async () => {
+  test("Não deve criar um saque sem um deposito previo", async () => {
     const accountInput = {
       name: "John Doe",
       email: "john.doe@example.com",
@@ -69,12 +71,13 @@ describe("Withdraw", () => {
 
     const accountOutput = await signUp.execute(accountInput);
 
-    const fundInput = {
+    const withdrawInput = {
       accountId: accountOutput.accountId,
-      assetId: "ABC",
-      quantity: 1000
+      assetId: "BTC",
+      quantity: 1
     }
-    await expect(() => withdraw.execute(fundInput)).rejects.toThrow("Invalid asset");
+
+    await expect(() => withdraw.execute(withdrawInput)).rejects.toThrow("Insufficient funds");
   });
 
   test("Não deve criar um saque com saldo insuficiente", async () => {
@@ -87,32 +90,29 @@ describe("Withdraw", () => {
 
     const accountOutput = await signUp.execute(accountInput);
 
-    const inputs = [
+    const depositInputs = [
       {
-        fundId: crypto.randomUUID(),
         accountId: accountOutput.accountId,
         assetId: "BTC",
         quantity: 200
       },
       {
-        fundId: crypto.randomUUID(),
         accountId: accountOutput.accountId,
         assetId: "BTC",
         quantity: 300
       },
     ]
 
-    await Promise.all(inputs.map(async (input) => {
+    await Promise.all(depositInputs.map(async (input) => {
       await deposit.execute(input);
     }));
 
-    const fundInput = {
-      fundId: crypto.randomUUID(),
+    const withdrawInput = {
       accountId: accountOutput.accountId,
       assetId: "BTC",
       quantity: 501
     }
 
-    await expect(() => withdraw.execute(fundInput)).rejects.toThrow("Insufficient balance");
+    await expect(() => withdraw.execute(withdrawInput)).rejects.toThrow("Insufficient funds");
   });
 });

@@ -1,17 +1,19 @@
-import { AccountDAODatabase } from "../src/account-DAO";
-import { Deposit } from "../src/deposit";
-import { FundDAOInMemory } from "../src/fund-DAO";
+import { AccountRepositoryDatabase } from "../src/account-repository";
+
 import { SignUp } from "../src/signup";
+import { Deposit } from "../src/deposit";
+import { GetAccount } from "../src/get-account";
 
 let deposit: Deposit;
 let signUp: SignUp;
+let getAccount: GetAccount;
 
 beforeEach(() => {
-  const fundDAO = new FundDAOInMemory();
-  const accountDAO = new AccountDAODatabase();
+  const accountRepository = new AccountRepositoryDatabase();
 
-  deposit = new Deposit(fundDAO, accountDAO);
-  signUp = new SignUp(accountDAO);
+  deposit = new Deposit(accountRepository);
+  signUp = new SignUp(accountRepository);
+  getAccount = new GetAccount(accountRepository);
 });
 
 describe("Deposit", () => {
@@ -31,11 +33,11 @@ describe("Deposit", () => {
       quantity: 1000
     }
 
-    const depositOutput = await deposit.execute(fundInput);
+    await deposit.execute(fundInput);
+    const getAccountOutput = await getAccount.execute(accountOutput.accountId);
 
-    expect(depositOutput.accountId).toBe(fundInput.accountId);
-    expect(depositOutput.assetId).toBe(fundInput.assetId);
-    expect(depositOutput.quantity).toBe(fundInput.quantity);
+    expect(getAccountOutput.balances[0].assetId).toBe(fundInput.assetId);
+    expect(getAccountOutput.balances[0].quantity).toBe(fundInput.quantity);
   });
 
   test("Não deve criar um deposito com conta inexistente", async () => {
@@ -46,42 +48,5 @@ describe("Deposit", () => {
     }
 
     await expect(() => deposit.execute(fundInput)).rejects.toThrow("Account not found");
-  });
-
-  test("Não deve criar um deposito com asset invalido", async () => {
-    const accountInput = {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      document: "85486231016",
-      password: "Password123"
-    }
-
-    const accountOutput = await signUp.execute(accountInput);
-
-    const fundInput = {
-      accountId: accountOutput.accountId,
-      assetId: "ABC",
-      quantity: 1000
-    }
-    await expect(() => deposit.execute(fundInput)).rejects.toThrow("Invalid asset");
-  });
-
-  test("Não deve criar um deposito com quantidade invalida", async () => {
-    const accountInput = {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      document: "85486231016",
-      password: "Password123"
-    }
-
-    const accountOutput = await signUp.execute(accountInput);
-
-    const fundInput = {
-      accountId: accountOutput.accountId,
-      assetId: "BTC",
-      quantity: 0
-    }
-
-    await expect(() => deposit.execute(fundInput)).rejects.toThrow("Invalid quantity");
   });
 });

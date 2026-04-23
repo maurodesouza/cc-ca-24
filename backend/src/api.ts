@@ -5,8 +5,7 @@ import { SignUp } from "./signup";
 import { GetAccount } from "./get-account";
 import { Deposit } from "./deposit";
 import { Withdraw } from "./withdraw";
-import { AccountDAODatabase } from "./account-DAO";
-import { FundDAODatabase } from "./fund-DAO";
+import { AccountRepositoryDatabase } from "./account-repository";
 
 const PORT = 4156;
 
@@ -15,12 +14,11 @@ function main() {
   app.use(express.json());
   app.use(cors());
 
-  const accountDAO = new AccountDAODatabase();
-  const fundDAO = new FundDAODatabase();
-  const signUp = new SignUp(accountDAO);
-  const getAccount = new GetAccount(accountDAO);
-  const deposit = new Deposit(fundDAO, accountDAO);
-  const withdraw = new Withdraw(fundDAO, accountDAO);
+  const AccountRepository = new AccountRepositoryDatabase();
+  const signUp = new SignUp(AccountRepository);
+  const getAccount = new GetAccount(AccountRepository);
+  const deposit = new Deposit(AccountRepository);
+  const withdraw = new Withdraw(AccountRepository);
 
   app.post("/signup", async (req, res) => {
     try {
@@ -47,9 +45,9 @@ function main() {
   app.post("/deposit", async (req, res) => {
     try {
       const body = req.body;
-      const output = await deposit.execute(body);
+      await deposit.execute(body);
 
-      return res.status(201).json({ fundId: output.fundId });
+      return res.status(201).json();
     } catch (error: any) {
       return res.status(400).json({ message: error.message });
     }
@@ -58,9 +56,9 @@ function main() {
   app.post("/withdraw", async (req, res) => {
     try {
       const body = req.body;
-      const output = await withdraw.execute(body);
+      await withdraw.execute(body);
 
-      return res.status(201).json({ fundId: output.fundId });
+      return res.status(201).json();
     } catch (error: any) {
       return res.status(400).json({ message: error.message });
     }
