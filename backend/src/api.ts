@@ -1,9 +1,11 @@
 import express from "express";
 import cors from "cors";
 
-import { AccountService } from "./account-service";
+import { SignUp } from "./signup";
+import { GetAccount } from "./get-account";
+import { Deposit } from "./deposit";
+import { Withdraw } from "./withdraw";
 import { AccountDAODatabase } from "./account-DAO";
-import { FundService } from "./fund-service";
 import { FundDAODatabase } from "./fund-DAO";
 
 const PORT = 4156;
@@ -15,13 +17,15 @@ function main() {
 
   const accountDAO = new AccountDAODatabase();
   const fundDAO = new FundDAODatabase();
-  const accountService = new AccountService(accountDAO);
-  const fundService = new FundService(fundDAO, accountDAO);
+  const signUp = new SignUp(accountDAO);
+  const getAccount = new GetAccount(accountDAO);
+  const deposit = new Deposit(fundDAO, accountDAO);
+  const withdraw = new Withdraw(fundDAO, accountDAO);
 
   app.post("/signup", async (req, res) => {
     try {
       const body = req.body;
-      const output = await accountService.signup(body);
+      const output = await signUp.execute(body);
 
       return res.status(201).json({ accountId: output.accountId });
     } catch (error: any) {
@@ -32,7 +36,7 @@ function main() {
   app.get("/accounts/:accountId", async (req, res) => {
     try {
       const params = req.params;
-      const output = await accountService.getAccount(params.accountId);
+      const output = await getAccount.execute(params.accountId);
 
       return res.status(200).json(output);
     } catch (error: any) {
@@ -43,7 +47,7 @@ function main() {
   app.post("/deposit", async (req, res) => {
     try {
       const body = req.body;
-      const output = await fundService.deposit(body);
+      const output = await deposit.execute(body);
 
       return res.status(201).json({ fundId: output.fundId });
     } catch (error: any) {
@@ -54,7 +58,7 @@ function main() {
   app.post("/withdraw", async (req, res) => {
     try {
       const body = req.body;
-      const output = await fundService.withdraw(body);
+      const output = await withdraw.execute(body);
 
       return res.status(201).json({ fundId: output.fundId });
     } catch (error: any) {

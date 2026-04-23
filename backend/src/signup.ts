@@ -7,14 +7,29 @@ import { isValidCpf } from "./is-valid-cpf";
 import { AccountDAO } from "./account-DAO";
 import { sendEmail } from "./mailer";
 
-export class AccountService {
+type Input = {
+  name: string;
+  email: string;
+  password: string;
+  document: string;
+}
+
+type Output = {
+  accountId: string;
+  name: string;
+  email: string;
+  password: string;
+  document: string;
+}
+
+export class SignUp {
   accountDAO: AccountDAO;
 
   constructor(accountDAO: AccountDAO) {
     this.accountDAO = accountDAO;
   }
 
-  async signup(input: any) {
+  async execute(input: Input): Promise<Output> {
     const account = {
       accountId: crypto.randomUUID(),
       name: input.name,
@@ -47,17 +62,15 @@ export class AccountService {
       body: "Your account has been created"
     });
 
-    return account
-  }
-
-  async getAccount(accountId: string) {
-    const account = await this.accountDAO.getById(accountId);
-
-    if (!account) {
-      throw new Error("Account not found");
+    const output = {
+      accountId: account.accountId,
+      name: account.name,
+      email: account.email,
+      password: account.password,
+      document: account.document,
     }
 
-    return account;
+    return output
   }
 }
 
