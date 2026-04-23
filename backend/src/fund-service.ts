@@ -31,8 +31,25 @@ export class FundService {
     return fund;
   }
 
-  async withdraw(fundId: string) {
+  async withdraw(input: any) {
+    const fund = {
+      fundId: crypto.randomUUID(),
+      accountId: input.accountId,
+      assetId: input.assetId,
+      quantity: -input.quantity,
+    }
 
+    const account = await this.accountDAO.getById(fund.accountId);
+
+    if (!account) throw new Error("Account not found");
+    if (!VALID_ASSETS.includes(fund.assetId)) throw new Error("Invalid asset");
+
+    const balance = await this.fundDAO.getBalance(fund.accountId, fund.assetId);
+    if (balance + fund.quantity < 0) throw new Error("Insufficient balance");
+
+    await this.fundDAO.save(fund);
+
+    return fund;
   }
 
   getFundById(fundId: string) {
