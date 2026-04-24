@@ -1,4 +1,4 @@
-import { AccountRepository } from "./account-repository";
+import { AccountRepository } from "../../infra/repository/account-repository";
 
 type Input = {
   accountId: string;

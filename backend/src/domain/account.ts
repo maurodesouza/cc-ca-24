@@ -1,9 +1,9 @@
 import { Balance } from "./balance";
 
+import { isValidCpf } from "./is-valid-cpf";
 import { isValidName } from "./is-valid-name";
 import { isValidEmail } from "./is-valid-email";
 import { isValidPassword } from "./is-valid-password";
-import { isValidCpf } from "./is-valid-cpf";
 
 export class Account {
   newMovements: Balance[] = [];

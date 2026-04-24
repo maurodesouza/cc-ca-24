@@ -1,4 +1,4 @@
-import { isValidPassword } from "../src/is-valid-password";
+import { isValidPassword } from "../src/domain/is-valid-password";
 
 test.each([
     "Abc12345",

@@ -1,8 +1,6 @@
-import crypto from "crypto";
-
-import { AccountRepository } from "./account-repository";
-import { sendEmail } from "./mailer";
-import { Account } from "./account";
+import { AccountRepository } from "../../infra/repository/account-repository";
+import { sendEmail } from "../../infra/mail/mailer";
+import { Account } from "../../domain/account";
 
 type Input = {
   name: string;

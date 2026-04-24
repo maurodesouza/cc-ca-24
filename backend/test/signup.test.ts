@@ -1,10 +1,10 @@
 import sinon from "sinon";
 
-import { SignUp } from "../src/signup";
-import { AccountRepositoryDatabase } from "../src/account-repository";
-import { PGPromiseAdapter } from "../src/pg-promise-adapter";
+import { SignUp } from "../src/application/use-cases/signup";
+import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
+import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 
-import * as mailer from "../src/mailer";
+import * as mailer from "../src/infra/mail/mailer";
 
 const validInput = {
   name: "John Doe",

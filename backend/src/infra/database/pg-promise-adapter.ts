@@ -1,4 +1,4 @@
-import { DatabaseConnection } from "./database-connection";
+import { DatabaseConnection } from "../../application/database/database-connection";
 import pgPromise from "pg-promise";
 
 export class PGPromiseAdapter implements DatabaseConnection {

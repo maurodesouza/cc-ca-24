@@ -1,4 +1,4 @@
-import { isValidCpf } from "../src/is-valid-cpf";
+import { isValidCpf } from "../src/domain/is-valid-cpf";
 
 test.each([
     "97456321558",

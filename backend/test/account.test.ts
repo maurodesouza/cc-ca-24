@@ -1,4 +1,4 @@
-import { Account } from "../src/account";
+import { Account } from "../src/domain/account";
 
 const validAccount = {
   name: "John Doe",

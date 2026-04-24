@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { HTTPServer } from "./http-server";
+import { HTTPServer } from "../../application/http/http-server";
 
 export class ExpressAdapter implements HTTPServer {
   app: express.Application;

@@ -1,6 +1,6 @@
-import { Account } from "./account";
-import { Balance } from "./balance";
-import { DatabaseConnection } from "./database-connection";
+import { Account } from "../../domain/account";
+import { Balance } from "../../domain/balance";
+import { DatabaseConnection } from "../../application/database/database-connection";
 
 export interface AccountRepository {
   save(account: Account): Promise<void>;

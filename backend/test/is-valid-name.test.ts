@@ -1,4 +1,4 @@
-import { isValidName } from "../src/is-valid-name";
+import { isValidName } from "../src/domain/is-valid-name";
 
 test.each([
     "Mauro de Souza",

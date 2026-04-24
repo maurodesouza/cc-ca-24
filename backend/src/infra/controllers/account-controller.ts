@@ -1,6 +1,6 @@
-import { HTTPServer } from "./http-server";
-import { SignUp } from "./signup";
-import { GetAccount } from "./get-account";
+import { HTTPServer } from "../../application/http/http-server";
+import { GetAccount } from "../../application/use-cases/get-account";
+import { SignUp } from "../../application/use-cases/signup";
 
 export class AccountController {
   constructor(readonly httpServer: HTTPServer, readonly signUp: SignUp, readonly getAccount: GetAccount) {

@@ -1,9 +1,9 @@
-import { AccountRepositoryDatabase } from "../src/account-repository";
-import { Withdraw } from "../src/withdraw";
-import { SignUp } from "../src/signup";
-import { Deposit } from "../src/deposit";
-import { GetAccount } from "../src/get-account";
-import { PGPromiseAdapter } from "../src/pg-promise-adapter";
+import { Withdraw } from "../src/application/use-cases/withdraw";
+import { SignUp } from "../src/application/use-cases/signup";
+import { Deposit } from "../src/application/use-cases/deposit";
+import { GetAccount } from "../src/application/use-cases/get-account";
+import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
+import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
 
 let withdraw: Withdraw;
 let deposit: Deposit;

@@ -1,15 +1,15 @@
 import express from "express";
 import cors from "cors";
 
-import { SignUp } from "./signup";
-import { GetAccount } from "./get-account";
-import { Deposit } from "./deposit";
-import { Withdraw } from "./withdraw";
-import { AccountRepositoryDatabase } from "./account-repository";
-import { PGPromiseAdapter } from "./pg-promise-adapter";
-import { AccountController } from "./account-controller";
-import { BalanceController } from "./balance-controller";
-import { ExpressAdapter } from "./express-adapter";
+import { GetAccount } from "./application/use-cases/get-account";
+import { Deposit } from "./application/use-cases/deposit";
+import { Withdraw } from "./application/use-cases/withdraw";
+import { PGPromiseAdapter } from "./infra/database/pg-promise-adapter";
+import { AccountController } from "./infra/controllers/account-controller";
+import { BalanceController } from "./infra/controllers/balance-controller";
+import { ExpressAdapter } from "./infra/http/express-adapter";
+import { AccountRepositoryDatabase } from "./infra/repository/account-repository";
+import { SignUp } from "./application/use-cases/signup";
 
 const PORT = 4156;
 

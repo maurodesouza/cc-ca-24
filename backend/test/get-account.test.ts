@@ -1,7 +1,7 @@
-import { GetAccount } from "../src/get-account";
-import { AccountRepositoryDatabase } from "../src/account-repository";
-import { SignUp } from "../src/signup";
-import { PGPromiseAdapter } from "../src/pg-promise-adapter";
+import { GetAccount } from "../src/application/use-cases/get-account";
+import { SignUp } from "../src/application/use-cases/signup";
+import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
+import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
 
 let getAccount: GetAccount;
 let signUp: SignUp;

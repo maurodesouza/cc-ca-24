@@ -1,4 +1,4 @@
-import { AccountRepository } from "./account-repository";
+import { AccountRepository } from "../../infra/repository/account-repository";
 
 type Balance = {
   assetId: string;
@@ -34,7 +34,7 @@ export class GetAccount {
       email: account.email,
       password: account.password,
       document: account.document,
-      balances: account.balances.map(balance => ({
+      balances: account.balances.map((balance: Balance) => ({
         assetId: balance.assetId,
         quantity: balance.quantity
       })),

@@ -1,5 +1,5 @@
-import { Deposit } from "./deposit";
-import { HTTPServer } from "./http-server";
+import { Deposit } from "../../application/use-cases/deposit";
+import { HTTPServer } from "../../application/http/http-server";
 
 export class BalanceController {
   constructor(readonly httpServer: HTTPServer, readonly deposit: Deposit, readonly withdraw: Deposit) {
