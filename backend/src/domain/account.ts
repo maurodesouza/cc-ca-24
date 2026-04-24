@@ -21,9 +21,6 @@ export class Account {
     document: string,
     readonly balances: Balance[],
   ) {
-    console.log("constructor passowrd", password)
-
-
     this.accountId = new UUID(accountId);
     this.name = new Name(name);
     this.email = new Email(email);
@@ -33,9 +30,6 @@ export class Account {
 
   static create(name: string, email: string, password: string, document: string, balances: Balance[] = []) {
     const accountId = UUID.create();
-
-    console.log("crewate passowrd", password)
-
     return new Account(accountId.value, name, email, password, document, balances);
   }
 
