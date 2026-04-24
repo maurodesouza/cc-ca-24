@@ -1,12 +1,12 @@
-import { isValidName } from "../src/domain/is-valid-name";
+import { Name } from "../src/domain/name";
 
 test.each([
     "Mauro de Souza",
     "Antonio Carlos",
     "Eloy Casagrande"
 ])("Deve validar um nome: %s", (name: string) => {
-    const isValid = isValidName(name);
-    expect(isValid).toBe(true);
+    const nameVo = new Name(name);
+    expect(nameVo.value).toBe(name);
 });
 
 test.each([
@@ -16,6 +16,5 @@ test.each([
     "",
     "   "
 ])("Não deve validar um nome: %s", (name: any) => {
-    const isValid = isValidName(name);
-    expect(isValid).toBe(false);
+    expect(() => new Name(name)).toThrow("Invalid name");
 });

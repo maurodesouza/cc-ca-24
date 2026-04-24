@@ -35,17 +35,17 @@ export class SignUp {
     await this.accountRepository.save(account);
 
     await sendEmail({
-      to: account.email,
+      to: account.getEmail(),
       subject: "Account created",
       body: "Your account has been created"
     });
 
     const output = {
-      accountId: account.accountId,
-      name: account.name,
-      email: account.email,
-      password: account.password,
-      document: account.document,
+      accountId: account.getAccountId(),
+      name: account.getName(),
+      email: account.getEmail(),
+      password: account.getPassword(),
+      document: account.getDocument(),
     }
 
     return output

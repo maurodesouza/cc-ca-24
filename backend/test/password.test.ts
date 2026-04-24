@@ -1,12 +1,12 @@
-import { isValidPassword } from "../src/domain/is-valid-password";
+import { Password } from "../src/domain/password";
 
 test.each([
     "Abc12345",
     "Password123",
     "MySecret99"
 ])("Deve validar uma senha: %s", (password: string) => {
-    const isValid = isValidPassword(password);
-    expect(isValid).toBe(true);
+    const passwordVo = new Password(password);
+    expect(passwordVo.value).toBe(password);
 });
 
 test.each([
@@ -18,6 +18,5 @@ test.each([
     undefined,
     ""
 ])("Não deve validar uma senha: %s", (password: any) => {
-    const isValid = isValidPassword(password);
-    expect(isValid).toBe(false);
+    expect(() => new Password(password)).toThrow("Invalid password");
 });

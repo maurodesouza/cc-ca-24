@@ -29,11 +29,11 @@ export class GetAccount {
     }
 
     const output = {
-      accountId: account.accountId,
-      name: account.name,
-      email: account.email,
-      password: account.password,
-      document: account.document,
+      accountId: account.getAccountId(),
+      name: account.getName(),
+      email: account.getEmail(),
+      password: account.getPassword(),
+      document: account.getDocument(),
       balances: account.balances.map((balance: Balance) => ({
         assetId: balance.assetId,
         quantity: balance.quantity

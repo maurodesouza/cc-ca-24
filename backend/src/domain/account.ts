@@ -1,42 +1,39 @@
 import { Balance } from "./balance";
 
-import { isValidCpf } from "./is-valid-cpf";
-import { isValidName } from "./is-valid-name";
-import { isValidEmail } from "./is-valid-email";
-import { isValidPassword } from "./is-valid-password";
+import { UUID } from "./uuid";
+import { Email } from "./email";
+import { Password } from "./password";
+import { Document } from "./document";
+import { Name } from "./name";
 
 export class Account {
   newMovements: Balance[] = [];
 
+  private accountId: UUID;
+  private name: Name;
+  private email: Email;
+  private password: Password;
+  private document: Document;
+
   constructor(
-    public readonly accountId: string,
-    public readonly name: string,
-    public readonly email: string,
-    public readonly password: string,
-    public readonly document: string,
-    public readonly balances: Balance[],
+    accountId: string,
+    name: string,
+    email: string,
+    password: string,
+    document: string,
+    readonly balances: Balance[],
   ) {
-    if (!isValidName(this.name)) {
-      throw new Error("Invalid name");
-    }
-
-    if (!isValidEmail(this.email)) {
-      throw new Error("Invalid email");
-    }
-
-    if (!isValidPassword(this.password)) {
-      throw new Error("Invalid password");
-    }
-
-    if (!isValidCpf(this.document)) {
-      throw new Error("Invalid document");
-    }
+    this.accountId = new UUID(accountId);
+    this.name = new Name(name);
+    this.email = new Email(email);
+    this.password = new Password(password);
+    this.document = new Document(document);
   }
 
-  static create( name: string, email: string, password: string, document: string, balances: Balance[] = []) {
-    const accountId = crypto.randomUUID();
+  static create(name: string, email: string, password: string, document: string, balances: Balance[] = []) {
+    const accountId = UUID.create();
 
-    return new Account(accountId, name, email, password, document, balances);
+    return new Account(accountId.value, name, email, password, document, balances);
   }
 
   deposit(assetId: string, quantity: number) {
@@ -69,5 +66,25 @@ export class Account {
     return this.balances
       .filter(b => b.assetId === assetId)
       .reduce((acc, b) => acc + b.quantity, 0);
+  }
+
+  getName() {
+    return this.name.value;
+  }
+
+  getAccountId() {
+    return this.accountId.value;
+  }
+
+  getEmail() {
+    return this.email.value;
+  }
+
+  getPassword() {
+    return this.password.value;
+  }
+
+  getDocument() {
+    return this.document.value;
   }
 }

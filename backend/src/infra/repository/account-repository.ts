@@ -12,16 +12,16 @@ export class AccountRepositoryDatabase implements AccountRepository {
   constructor(private connection: DatabaseConnection) {}
 
   async save(account: Account): Promise<void> {
-    await this.connection.query("insert into ccca.account (account_id, name, email, password, document) values ($1, $2, $3, $4, $5)", [account.accountId, account.name, account.email, account.password, account.document]);
+    await this.connection.query("insert into ccca.account (account_id, name, email, password, document) values ($1, $2, $3, $4, $5)", [account.getAccountId(), account.getName(), account.getEmail(), account.getPassword(), account.getDocument()]);
   }
 
   async update(account: Account): Promise<void> {
-    await this.connection.query("update ccca.account set name = $1, email = $2, password = $3, document = $4 where account_id = $5", [account.name, account.email, account.password, account.document, account.accountId]);
+    await this.connection.query("update ccca.account set name = $1, email = $2, password = $3, document = $4 where account_id = $5", [account.getName(), account.getEmail(), account.getPassword(), account.getDocument(), account.getAccountId()]);
 
     for (const movement of account.newMovements) {
       await this.connection.query(
         "insert into ccca.fund (fund_id, account_id, asset_id, quantity) values ($1, $2, $3, $4)",
-        [movement.fundId, account.accountId, movement.assetId, movement.quantity]
+        [movement.fundId, account.getAccountId(), movement.assetId, movement.quantity]
       );
     }
   }
@@ -41,11 +41,11 @@ export class AccountRepositoryInMemory implements AccountRepository {
   accounts: Record<string, any> = {};
 
   async save(account: any): Promise<void> {
-    this.accounts[account.accountId] = account;
+    this.accounts[account.getAccountId()] = account;
   }
 
   async update(account: any): Promise<void> {
-    this.accounts[account.accountId] = account;
+    this.accounts[account.getAccountId()] = account;
   }
 
   async getById(accountId: string): Promise<any> {
