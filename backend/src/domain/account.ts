@@ -7,8 +7,6 @@ import { Document } from "./document";
 import { Name } from "./name";
 
 export class Account {
-  newMovements: Balance[] = [];
-
   private accountId: UUID;
   private name: Name;
   private email: Email;
@@ -23,6 +21,9 @@ export class Account {
     document: string,
     readonly balances: Balance[],
   ) {
+    console.log("constructor passowrd", password)
+
+
     this.accountId = new UUID(accountId);
     this.name = new Name(name);
     this.email = new Email(email);
@@ -33,39 +34,31 @@ export class Account {
   static create(name: string, email: string, password: string, document: string, balances: Balance[] = []) {
     const accountId = UUID.create();
 
+    console.log("crewate passowrd", password)
+
     return new Account(accountId.value, name, email, password, document, balances);
   }
 
   deposit(assetId: string, quantity: number) {
-    if (quantity <= 0) {
-      throw new Error("Invalid quantity");
-    }
-
-    const balance = Balance.create(assetId, quantity);
-    this.balances.push(balance);
-    this.newMovements.push(balance);
+    if (quantity <= 0) throw new Error("Invalid quantity")
+    const existingBalance = this.balances.find((balance: Balance) => balance.assetId === assetId);
+    if (existingBalance) existingBalance.quantity += quantity;
+    else this.balances.push(new Balance(assetId, quantity));
   }
 
   withdraw(assetId: string, quantity: number) {
-    if (quantity <= 0) {
-      throw new Error("Invalid quantity");
-    }
-
-    const accountBalance = this.getBalance(assetId);
-
-    if (accountBalance < quantity) {
-      throw new Error("Insufficient funds");
-    }
-
-    const balance = Balance.create(assetId, -quantity);
-    this.balances.push(balance);
-    this.newMovements.push(balance);
+    if (quantity <= 0) throw new Error("Invalid quantity")
+    const existingBalance = this.balances.find((balance: Balance) => balance.assetId === assetId);
+    if (!existingBalance) throw new Error("Insufficient funds");
+    const newQuantity = existingBalance.quantity - quantity
+    if (newQuantity < 0) throw new Error("Insufficient funds");
+    existingBalance.quantity = newQuantity;
   }
 
   getBalance(assetId: string): number {
-    return this.balances
-      .filter(b => b.assetId === assetId)
-      .reduce((acc, b) => acc + b.quantity, 0);
+    const existingBalance = this.balances.find((balance: Balance) => balance.assetId === assetId);
+    if (!existingBalance) return 0;
+    return existingBalance.quantity;
   }
 
   getName() {

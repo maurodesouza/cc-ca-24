@@ -39,7 +39,7 @@ describe("Withdraw", () => {
     const depositInput = {
       accountId: accountOutput.accountId,
       assetId: "BTC",
-      quantity: 1000
+      quantity: 500
     }
 
     await deposit.execute(depositInput);
@@ -47,15 +47,15 @@ describe("Withdraw", () => {
     const withdrawInput = {
       accountId: accountOutput.accountId,
       assetId: "BTC",
-      quantity: 500
+      quantity: 400
     }
 
     await withdraw.execute(withdrawInput);
 
     const getAccountOutput = await getAccount.execute(accountOutput.accountId);
 
-    expect(getAccountOutput.balances[1].assetId).toBe(withdrawInput.assetId);
-    expect(getAccountOutput.balances[1].quantity).toBe(-withdrawInput.quantity);
+    expect(getAccountOutput.balances[0].assetId).toBe(withdrawInput.assetId);
+    expect(getAccountOutput.balances[0].quantity).toBe(100);
   });
 
   test("Não deve criar um saque com conta inexistente", async () => {

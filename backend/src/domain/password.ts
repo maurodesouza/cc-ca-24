@@ -4,10 +4,12 @@ export class Password {
   value: string;
 
   constructor(value: string) {
+    console.log('value', value)
+
     if (!Password.validate(value)) {
       throw new Error("Invalid password");
     }
-    
+
     this.value = value;
   }
 

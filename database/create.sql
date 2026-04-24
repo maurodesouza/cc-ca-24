@@ -10,10 +10,9 @@ create table ccca.account (
     password text
 );
 
-create table ccca.fund (
-    fund_id uuid primary key,
-
-    account_id uuid,
-    asset_id text,
-    quantity numeric
+create table ccca.balance (
+	account_id uuid,
+	asset_id text,
+	quantity numeric,
+	primary key (account_id, asset_id)
 );
