@@ -3,17 +3,25 @@ import { AccountRepositoryDatabase } from "../src/account-repository";
 import { SignUp } from "../src/signup";
 import { Deposit } from "../src/deposit";
 import { GetAccount } from "../src/get-account";
+import { PGPromiseAdapter } from "../src/pg-promise-adapter";
 
 let deposit: Deposit;
 let signUp: SignUp;
 let getAccount: GetAccount;
 
+let pgPromiseAdapter: PGPromiseAdapter;
+
 beforeEach(() => {
-  const accountRepository = new AccountRepositoryDatabase();
+  pgPromiseAdapter = new PGPromiseAdapter();
+  const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
 
   deposit = new Deposit(accountRepository);
   signUp = new SignUp(accountRepository);
   getAccount = new GetAccount(accountRepository);
+});
+
+afterEach(async () => {
+  await pgPromiseAdapter.close();
 });
 
 describe("Deposit", () => {

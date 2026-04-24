@@ -1,6 +1,6 @@
-import pgPromise from "pg-promise";
 import { Account } from "./account";
 import { Balance } from "./balance";
+import { DatabaseConnection } from "./database-connection";
 
 export interface AccountRepository {
   save(account: Account): Promise<void>;
@@ -9,39 +9,29 @@ export interface AccountRepository {
 }
 
 export class AccountRepositoryDatabase implements AccountRepository {
+  constructor(private connection: DatabaseConnection) {}
+
   async save(account: Account): Promise<void> {
-    const connection = pgPromise()("postgres://postgres:postgres@localhost:6543/app");
-
-    await connection.query("insert into ccca.account (account_id, name, email, password, document) values ($1, $2, $3, $4, $5)", [account.accountId, account.name, account.email, account.password, account.document]);
-
-    connection.$pool.end();
+    await this.connection.query("insert into ccca.account (account_id, name, email, password, document) values ($1, $2, $3, $4, $5)", [account.accountId, account.name, account.email, account.password, account.document]);
   }
 
   async update(account: Account): Promise<void> {
-    const connection = pgPromise()("postgres://postgres:postgres@localhost:6543/app");
-
-    await connection.query("update ccca.account set name = $1, email = $2, password = $3, document = $4 where account_id = $5", [account.name, account.email, account.password, account.document, account.accountId]);
+    await this.connection.query("update ccca.account set name = $1, email = $2, password = $3, document = $4 where account_id = $5", [account.name, account.email, account.password, account.document, account.accountId]);
 
     for (const movement of account.newMovements) {
-      await connection.query(
+      await this.connection.query(
         "insert into ccca.fund (fund_id, account_id, asset_id, quantity) values ($1, $2, $3, $4)",
         [movement.fundId, account.accountId, movement.assetId, movement.quantity]
       );
     }
-
-    connection.$pool.end();
   }
 
   async getById(accountId: string): Promise<Account> {
-    const connection = pgPromise()("postgres://postgres:postgres@localhost:6543/app");
-    const [accountRaw] = await connection.query("select * from ccca.account where account_id = $1", [accountId]);
-
+    const [accountRaw] = await this.connection.query("select * from ccca.account where account_id = $1", [accountId]);
     if (!accountRaw) throw new Error("Account not found");
 
-    const balancesRaw = await connection.query("select * from ccca.fund where account_id = $1", [accountId]);
+    const balancesRaw = await this.connection.query("select * from ccca.fund where account_id = $1", [accountId]);
     const balances = balancesRaw.map((balance: any) => new Balance(balance.fund_id, balance.asset_id, parseFloat(balance.quantity)));
-
-    connection.$pool.end();
 
     return new Account(accountRaw.account_id, accountRaw.name, accountRaw.email, accountRaw.password, accountRaw.document, balances);
   }

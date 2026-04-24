@@ -6,6 +6,7 @@ import { GetAccount } from "./get-account";
 import { Deposit } from "./deposit";
 import { Withdraw } from "./withdraw";
 import { AccountRepositoryDatabase } from "./account-repository";
+import { PGPromiseAdapter } from "./pg-promise-adapter";
 
 const PORT = 4156;
 
@@ -14,11 +15,12 @@ function main() {
   app.use(express.json());
   app.use(cors());
 
-  const AccountRepository = new AccountRepositoryDatabase();
-  const signUp = new SignUp(AccountRepository);
-  const getAccount = new GetAccount(AccountRepository);
-  const deposit = new Deposit(AccountRepository);
-  const withdraw = new Withdraw(AccountRepository);
+  const pgPromiseAdapter = new PGPromiseAdapter();
+  const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
+  const signUp = new SignUp(accountRepository);
+  const getAccount = new GetAccount(accountRepository);
+  const deposit = new Deposit(accountRepository);
+  const withdraw = new Withdraw(accountRepository);
 
   app.post("/signup", async (req, res) => {
     try {

@@ -2,6 +2,7 @@ import sinon from "sinon";
 
 import { SignUp } from "../src/signup";
 import { AccountRepositoryDatabase } from "../src/account-repository";
+import { PGPromiseAdapter } from "../src/pg-promise-adapter";
 
 import * as mailer from "../src/mailer";
 
@@ -13,10 +14,16 @@ const validInput = {
 }
 
 let signUp: SignUp;
+let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
-  const AccountRepository = new AccountRepositoryDatabase();
-  signUp = new SignUp(AccountRepository);
+  pgPromiseAdapter = new PGPromiseAdapter();
+  const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
+  signUp = new SignUp(accountRepository);
+});
+
+afterEach(async () => {
+  await pgPromiseAdapter.close();
 });
 
 describe("SignUp", () => {

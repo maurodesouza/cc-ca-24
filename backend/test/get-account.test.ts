@@ -1,14 +1,21 @@
 import { GetAccount } from "../src/get-account";
 import { AccountRepositoryDatabase } from "../src/account-repository";
 import { SignUp } from "../src/signup";
+import { PGPromiseAdapter } from "../src/pg-promise-adapter";
 
 let getAccount: GetAccount;
 let signUp: SignUp;
+let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
-  const AccountRepository = new AccountRepositoryDatabase();
+  pgPromiseAdapter = new PGPromiseAdapter();
+  const AccountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
   getAccount = new GetAccount(AccountRepository);
   signUp = new SignUp(AccountRepository);
+});
+
+afterEach(async () => {
+  await pgPromiseAdapter.close();
 });
 
 describe("GetAccount", () => {
