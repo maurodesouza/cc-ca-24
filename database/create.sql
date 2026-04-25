@@ -14,6 +14,7 @@ create table ccca.balance (
 	account_id uuid,
 	asset_id text,
 	quantity numeric,
+	blocked_quantity numeric,
 	primary key (account_id, asset_id)
 );
 

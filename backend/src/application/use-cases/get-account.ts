@@ -34,9 +34,9 @@ export class GetAccount {
       email: account.getEmail(),
       password: account.getPassword(),
       document: account.getDocument(),
-      balances: account.balances.map((balance: Balance) => ({
-        assetId: balance.assetId,
-        quantity: balance.quantity
+      balances: account.balances.map((balance) => ({
+        assetId: balance.getAssetId(),
+        quantity: balance.getQuantity()
       })),
     }
 

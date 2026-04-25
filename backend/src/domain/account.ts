@@ -35,24 +35,22 @@ export class Account {
 
   deposit(assetId: string, quantity: number) {
     if (quantity <= 0) throw new Error("Invalid quantity")
-    const existingBalance = this.balances.find((balance: Balance) => balance.assetId === assetId);
-    if (existingBalance) existingBalance.quantity += quantity;
-    else this.balances.push(new Balance(assetId, quantity));
+    const existingBalance = this.balances.find((balance: Balance) => balance.getAssetId() === assetId);
+    if (existingBalance) existingBalance.deposit(quantity);
+    else this.balances.push(Balance.create(assetId, quantity));
   }
 
   withdraw(assetId: string, quantity: number) {
     if (quantity <= 0) throw new Error("Invalid quantity")
-    const existingBalance = this.balances.find((balance: Balance) => balance.assetId === assetId);
+    const existingBalance = this.balances.find((balance: Balance) => balance.getAssetId() === assetId);
     if (!existingBalance) throw new Error("Insufficient funds");
-    const newQuantity = existingBalance.quantity - quantity
-    if (newQuantity < 0) throw new Error("Insufficient funds");
-    existingBalance.quantity = newQuantity;
+    existingBalance.withdraw(quantity);
   }
 
   getBalance(assetId: string): number {
-    const existingBalance = this.balances.find((balance: Balance) => balance.assetId === assetId);
+    const existingBalance = this.balances.find((balance: Balance) => balance.getAssetId() === assetId);
     if (!existingBalance) return 0;
-    return existingBalance.quantity;
+    return existingBalance.getQuantity();
   }
 
   getName() {

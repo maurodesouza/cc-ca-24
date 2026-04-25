@@ -21,7 +21,7 @@ export class AccountRepositoryDatabase implements AccountRepository {
     await this.connection.query("delete from ccca.balance where account_id = $1", [account.getAccountId()]);
 
     for (const balance of account.balances) {
-      await this.connection.query("insert into ccca.balance (account_id, asset_id, quantity) values ($1, $2, $3)", [account.getAccountId(), balance.assetId, balance.quantity]);
+      await this.connection.query("insert into ccca.balance (account_id, asset_id, quantity, blocked_quantity) values ($1, $2, $3, $4)", [account.getAccountId(), balance.getAssetId(), balance.getQuantity(), balance.getBlockedQuantity()]);
     }
   }
 
@@ -29,7 +29,7 @@ export class AccountRepositoryDatabase implements AccountRepository {
     const [accountRaw] = await this.connection.query("select * from ccca.account where account_id = $1", [accountId]);
     if (!accountRaw) throw new Error("Account not found");
     const balancesData = await this.connection.query("select * from ccca.balance where account_id = $1", [accountId]);
-    const balances = balancesData.map((balanceData: any) => (new Balance(balanceData.asset_id, parseFloat(balanceData.quantity))));
+    const balances = balancesData.map((balanceData: any) => (new Balance(balanceData.asset_id, parseFloat(balanceData.quantity), parseFloat(balanceData.blocked_quantity || 0))));
     return new Account(accountRaw.account_id, accountRaw.name, accountRaw.email, accountRaw.password, accountRaw.document, balances);
   }
 }
