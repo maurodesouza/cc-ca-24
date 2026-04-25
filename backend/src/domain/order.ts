@@ -1,13 +1,14 @@
 import { UUID } from "./uuid";
+import { Quantity } from "./quantity";
 
 export class Order {
   private orderId: UUID;
   private accountId: UUID;
   private marketId: string;
   private side: string;
-  private quantity: number;
+  private quantity: Quantity;
   private price: number;
-  private fillQuantity: number;
+  private fillQuantity: Quantity;
   private fillPrice: number;
   private status: string;
   private timestamp: Date;
@@ -28,9 +29,9 @@ export class Order {
     this.accountId = new UUID(accountId);
     this.marketId = marketId;
     this.side = side;
-    this.quantity = quantity;
+    this.quantity = new Quantity(quantity);
     this.price = price;
-    this.fillQuantity = fillQuantity;
+    this.fillQuantity = new Quantity(fillQuantity);
     this.fillPrice = fillPrice;
     this.status = status;
     this.timestamp = timestamp;
@@ -79,7 +80,7 @@ export class Order {
   }
 
   getQuantity() {
-    return this.quantity;
+    return this.quantity.getValue();
   }
 
   getPrice() {
@@ -87,7 +88,7 @@ export class Order {
   }
 
   getFillQuantity() {
-    return this.fillQuantity;
+    return this.fillQuantity.getValue();
   }
 
   getFillPrice() {
