@@ -1,4 +1,5 @@
 import { Account } from "../src/domain/account";
+import { Order } from "../src/domain/order";
 
 const validAccount = {
   name: "John Doe",
@@ -14,7 +15,7 @@ describe("Account", () => {
     account.deposit("BTC", 1000);
     account.deposit("BTC", 1000);
 
-    expect(account.getBalance("BTC")).toBe(2000);
+    expect(account.getAvailableBalanceByAssetId("BTC")).toBe(2000);
   });
 
   test("Não deve depositar com quantidade invalida", async () => {
@@ -35,7 +36,7 @@ describe("Account", () => {
     account.deposit("BTC", 1000);
     account.withdraw("BTC", 1000);
 
-    expect(account.getBalance("BTC")).toBe(0);
+    expect(account.getAvailableBalanceByAssetId("BTC")).toBe(0);
   });
 
   test("Não deve criar um saque com saldo insuficiente", () => {
@@ -43,4 +44,37 @@ describe("Account", () => {
 
     expect(() => account.withdraw("BTC", 1000)).toThrow("Insufficient funds");
   });
+
+  test("Deve validar o saldo disponivel para a criação de uma ordem", () => {
+    const account = Account.create(validAccount.name, validAccount.email, validAccount.password, validAccount.document)
+
+    account.deposit("USD", 10000);
+    const order = Order.create(account.getAccountId(), "BTC-USD", "buy", 1, 5000)
+
+    expect(account.blockOrder(order)).toBe(true);
+    expect(account.getAvailableBalanceByAssetId("USD")).toBe(5000);
+  })
+
+  test("Não deve ter saldo suficiente para a criação de uma ordem", () => {
+    const account = Account.create(validAccount.name, validAccount.email, validAccount.password, validAccount.document)
+
+    account.deposit("USD", 1000);
+    const order = Order.create(account.getAccountId(), "BTC-USD", "buy", 1, 5000)
+
+    expect(account.blockOrder(order)).toBe(false);
+    expect(account.getAvailableBalanceByAssetId("USD")).toBe(1000);
+  })
+
+  test("Não deve ter saldo suficiente para a criação de duas ordens", () => {
+    const account = Account.create(validAccount.name, validAccount.email, validAccount.password, validAccount.document)
+    account.deposit("USD", 6000);
+
+    const order1 = Order.create(account.getAccountId(), "BTC-USD", "buy", 1, 5000)
+    expect(account.blockOrder(order1)).toBe(true);
+    expect(account.getAvailableBalanceByAssetId("USD")).toBe(1000);
+
+    const order2 = Order.create(account.getAccountId(), "BTC-USD", "buy", 1, 5000)
+    expect(account.blockOrder(order2)).toBe(false);
+    expect(account.getAvailableBalanceByAssetId("USD")).toBe(1000);
+  })
 });

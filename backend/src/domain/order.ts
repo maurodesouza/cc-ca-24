@@ -101,4 +101,13 @@ export class Order {
   getTimestamp() {
     return this.timestamp;
   }
+
+  getMainAndPaymentAssets() {
+    const [mainAsset, paymentAsset] = this.marketId.split("-");
+    return { mainAsset, paymentAsset };
+  }
+
+  isBuy() {
+    return this.side === "buy";
+  }
 }

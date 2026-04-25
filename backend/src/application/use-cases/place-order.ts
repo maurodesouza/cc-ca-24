@@ -28,15 +28,6 @@ export class PlaceOrder {
 
     if (!account) throw new Error("Account not found");
 
-    const [mainAssets, paymentAsset] = input.marketId.split("-");
-
-    const isBuy = input.side === "buy";
-
-    const assetId = isBuy ? paymentAsset : mainAssets;
-    const quantity = isBuy ? input.quantity * input.price : input.quantity;
-    const balance = account.getBalance(assetId);
-    if (balance < quantity) throw new Error("Insufficient balance");
-
     const order = Order.create(
       input.accountId,
       input.marketId,
@@ -45,7 +36,11 @@ export class PlaceOrder {
       input.price,
     );
 
+    const blocked = account.blockOrder(order);
+    if (!blocked) throw new Error("Insufficient funds");
+
     await this.orderRepository.save(order);
+    await this.accountRepository.update(account);
 
     return {
       orderId: order.getOrderId(),
