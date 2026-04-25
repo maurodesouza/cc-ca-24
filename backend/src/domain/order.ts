@@ -111,4 +111,15 @@ export class Order {
   isBuy() {
     return this.side === "buy";
   }
+
+  getAvailableQuantity() {
+    return this.quantity.getValue() - this.fillQuantity.getValue();
+  }
+
+  fill(quantity: number, price: number) {
+    this.fillQuantity = this.fillQuantity.add(new Quantity(quantity));
+    this.fillPrice = price;
+
+    if (this.getAvailableQuantity() === 0) this.status = "closed";
+  }
 }

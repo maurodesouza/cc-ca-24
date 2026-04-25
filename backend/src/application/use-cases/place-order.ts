@@ -46,6 +46,23 @@ export class PlaceOrder {
     await this.orderRepository.save(order);
     await this.walletRepository.update(wallet);
 
+
+    while (true) {
+      const highestBid = await this.orderRepository.getHighestBid(input.marketId);
+      const lowestAsk = await this.orderRepository.getLowestAsk(input.marketId);
+
+      if (!highestBid || !lowestAsk || highestBid.getPrice() < lowestAsk.getPrice()) break;
+
+      const fillQuantity = Math.min(highestBid.getQuantity(), lowestAsk.getQuantity());
+      const fillPrice = (highestBid.getTimestamp() > lowestAsk.getTimestamp()) ? lowestAsk.getPrice() : highestBid.getPrice();
+
+      highestBid.fill(fillQuantity, fillPrice);
+      lowestAsk.fill(fillQuantity, fillPrice);
+
+      await this.orderRepository.update(highestBid);
+      await this.orderRepository.update(lowestAsk);
+    }
+
     return {
       orderId: order.getOrderId(),
     };
