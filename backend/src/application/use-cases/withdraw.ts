@@ -1,5 +1,6 @@
 import { WalletRepository } from "../../infra/repository/wallet-repository";
 import { AccountRepository } from "../../infra/repository/account-repository";
+import { inject } from "../../infra/di/registry";
 
 type Input = {
   accountId: string;
@@ -7,13 +8,10 @@ type Input = {
   quantity: number;
 }
 export class Withdraw {
-  walletRepository: WalletRepository;
-  accountRepository: AccountRepository;
-
-  constructor(walletRepository: WalletRepository, accountRepository: AccountRepository) {
-    this.walletRepository = walletRepository;
-    this.accountRepository = accountRepository;
-  }
+  @inject("walletRepository")
+  private readonly walletRepository!: WalletRepository;
+  @inject("accountRepository")
+  private readonly accountRepository!: AccountRepository;
 
   async execute(input: Input): Promise<void> {
     const account = await this.accountRepository.getById(input.accountId);

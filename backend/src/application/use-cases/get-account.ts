@@ -1,3 +1,4 @@
+import { inject } from "../../infra/di/registry";
 import { AccountRepository } from "../../infra/repository/account-repository";
 import { WalletRepository } from "../../infra/repository/wallet-repository";
 
@@ -16,13 +17,10 @@ type Output = {
 }
 
 export class GetAccount {
-  accountRepository: AccountRepository;
-  walletRepository: WalletRepository;
-
-  constructor(accountRepository: AccountRepository, walletRepository: WalletRepository) {
-    this.accountRepository = accountRepository;
-    this.walletRepository = walletRepository;
-  }
+  @inject("accountRepository")
+  private readonly accountRepository!: AccountRepository;
+  @inject("walletRepository")
+  private readonly walletRepository!: WalletRepository;
 
   async execute(accountId: string): Promise<Output> {
     const account = await this.accountRepository.getById(accountId);

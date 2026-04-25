@@ -1,4 +1,5 @@
 import { OrderRepository } from "../../infra/repository/order-repository";
+import { inject } from "../../infra/di/registry";
 
 type Output = {
   orderId: string;
@@ -14,11 +15,8 @@ type Output = {
 }
 
 export class GetOrder {
-  orderRepository: OrderRepository;
-
-  constructor(orderRepository: OrderRepository) {
-    this.orderRepository = orderRepository;
-  }
+  @inject("orderRepository")
+  private readonly orderRepository!: OrderRepository;
 
   async execute(orderId: string): Promise<Output> {
     const order = await this.orderRepository.getById(orderId);

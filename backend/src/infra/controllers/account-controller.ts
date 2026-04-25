@@ -1,15 +1,23 @@
 import { HTTPServer } from "../../application/http/http-server";
 import { GetAccount } from "../../application/use-cases/get-account";
 import { SignUp } from "../../application/use-cases/signup";
+import { inject } from "../di/registry";
 
 export class AccountController {
-  constructor(readonly httpServer: HTTPServer, readonly signUp: SignUp, readonly getAccount: GetAccount) {
-    httpServer.route("post", "/signup", async (body: any) => {
+  @inject("httpServer")
+  private readonly httpServer!: HTTPServer;
+  @inject("signUp")
+  private readonly signUp!: SignUp;
+  @inject("getAccount")
+  private readonly getAccount!: GetAccount;
+
+  constructor() {
+    this.httpServer.route("post", "/signup", async (body: any) => {
       const output = await this.signUp.execute(body);
       return output;
     });
 
-    httpServer.route("get", "/accounts/:accountId", async (_: any, params: any) => {
+    this.httpServer.route("get", "/accounts/:accountId", async (_: any, params: any) => {
       const output = await this.getAccount.execute(params.accountId);
       return output;
     });

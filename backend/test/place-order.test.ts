@@ -7,6 +7,7 @@ import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-reposit
 import { GetOrder } from "../src/application/use-cases/get-order";
 import { OrderRepositoryDatabase } from "../src/infra/repository/order-repository";
 import { PlaceOrder } from "../src/application/use-cases/place-order";
+import { Registry } from "../src/infra/di/registry";
 
 let deposit: Deposit;
 let signUp: SignUp;
@@ -19,19 +20,27 @@ let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
-  const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
-  const walletRepository = new WalletRepositoryDatabase(pgPromiseAdapter);
-  orderRepository = new OrderRepositoryDatabase(pgPromiseAdapter);
+  Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
+  Registry.getInstance().register("accountRepository", new AccountRepositoryDatabase());
+  Registry.getInstance().register("walletRepository", new WalletRepositoryDatabase());
+  Registry.getInstance().register("orderRepository", new OrderRepositoryDatabase());
+  Registry.getInstance().register("deposit", new Deposit());
+  Registry.getInstance().register("signUp", new SignUp());
+  Registry.getInstance().register("getAccount", new GetAccount());
+  Registry.getInstance().register("getOrder", new GetOrder());
+  Registry.getInstance().register("placeOrder", new PlaceOrder());
 
-  deposit = new Deposit(walletRepository, accountRepository);
-  signUp = new SignUp(accountRepository);
-  getAccount = new GetAccount(accountRepository, walletRepository);
-  getOrder = new GetOrder(orderRepository);
-  placeOrder = new PlaceOrder(walletRepository, accountRepository, orderRepository);
+  deposit = new Deposit();
+  signUp = new SignUp();
+  getAccount = new GetAccount();
+  getOrder = new GetOrder();
+  placeOrder = new PlaceOrder();
+  orderRepository = new OrderRepositoryDatabase();
 });
 
 afterEach(async () => {
   await orderRepository.clear();
+  Registry.getInstance().dependencies.clear();
   await pgPromiseAdapter.close();
 });
 

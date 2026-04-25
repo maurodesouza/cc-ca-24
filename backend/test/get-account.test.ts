@@ -3,6 +3,7 @@ import { SignUp } from "../src/application/use-cases/signup";
 import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
 import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-repository";
+import { Registry } from "../src/infra/di/registry";
 
 let getAccount: GetAccount;
 let signUp: SignUp;
@@ -10,13 +11,18 @@ let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
-  const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
-  const walletRepository = new WalletRepositoryDatabase(pgPromiseAdapter);
-  getAccount = new GetAccount(accountRepository, walletRepository);
-  signUp = new SignUp(accountRepository);
+  Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
+  Registry.getInstance().register("accountRepository", new AccountRepositoryDatabase());
+  Registry.getInstance().register("walletRepository", new WalletRepositoryDatabase());
+  Registry.getInstance().register("getAccount", new GetAccount());
+  Registry.getInstance().register("signUp", new SignUp());
+
+  getAccount = new GetAccount();
+  signUp = new SignUp();
 });
 
 afterEach(async () => {
+  Registry.getInstance().dependencies.clear();
   await pgPromiseAdapter.close();
 });
 

@@ -2,6 +2,7 @@ import { Order } from "../../domain/order";
 import { WalletRepository } from "../../infra/repository/wallet-repository";
 import { AccountRepository } from "../../infra/repository/account-repository";
 import { OrderRepository } from "../../infra/repository/order-repository";
+import { inject } from "../../infra/di/registry";
 
 type Input = {
   accountId: string;
@@ -16,15 +17,12 @@ type Output = {
 }
 
 export class PlaceOrder {
-  walletRepository: WalletRepository;
-  accountRepository: AccountRepository;
-  orderRepository: OrderRepository;
-
-  constructor(walletRepository: WalletRepository, accountRepository: AccountRepository, orderRepository: OrderRepository) {
-    this.walletRepository = walletRepository;
-    this.accountRepository = accountRepository;
-    this.orderRepository = orderRepository;
-  }
+  @inject("walletRepository")
+  private readonly walletRepository!: WalletRepository;
+  @inject("accountRepository")
+  private readonly accountRepository!: AccountRepository;
+  @inject("orderRepository")
+  private readonly orderRepository!: OrderRepository;
 
   async execute(input: Input): Promise<Output> {
     const account = await this.accountRepository.getById(input.accountId);

@@ -1,6 +1,7 @@
 import { AccountRepository } from "../../infra/repository/account-repository";
 import { sendEmail } from "../../infra/mail/mailer";
 import { Account } from "../../domain/account";
+import { inject } from "../../infra/di/registry";
 
 type Input = {
   name: string;
@@ -18,11 +19,8 @@ type Output = {
 }
 
 export class SignUp {
-  accountRepository: AccountRepository;
-
-  constructor(accountRepository: AccountRepository) {
-    this.accountRepository = accountRepository;
-  }
+  @inject("accountRepository")
+  private readonly accountRepository!: AccountRepository;
 
   async execute(input: Input): Promise<Output> {
     const account = Account.create(

@@ -1,5 +1,6 @@
 import { Account } from "../../domain/account";
 import { DatabaseConnection } from "../../application/database/database-connection";
+import { inject } from "../di/registry";
 
 export interface AccountRepository {
   save(account: Account): Promise<void>;
@@ -8,7 +9,8 @@ export interface AccountRepository {
 }
 
 export class AccountRepositoryDatabase implements AccountRepository {
-  constructor(private connection: DatabaseConnection) {}
+  @inject("databaseConnection")
+  private readonly connection!: DatabaseConnection;
 
   async save(account: Account): Promise<void> {
     await this.connection.query("insert into ccca.account (account_id, name, email, password, document) values ($1, $2, $3, $4, $5)", [account.getAccountId(), account.getName(), account.getEmail(), account.getPassword(), account.getDocument()]);

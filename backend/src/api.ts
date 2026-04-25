@@ -11,6 +11,7 @@ import { ExpressAdapter } from "./infra/http/express-adapter";
 import { AccountRepositoryDatabase } from "./infra/repository/account-repository";
 import { WalletRepositoryDatabase } from "./infra/repository/wallet-repository";
 import { SignUp } from "./application/use-cases/signup";
+import { Registry } from "./infra/di/registry";
 
 const PORT = 4156;
 
@@ -19,21 +20,24 @@ function main() {
   app.use(express.json());
   app.use(cors());
 
-  const pgPromiseAdapter = new PGPromiseAdapter();
-  const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
-  const walletRepository = new WalletRepositoryDatabase(pgPromiseAdapter);
 
-  const signUp = new SignUp(accountRepository);
-  const getAccount = new GetAccount(accountRepository, walletRepository);
-  const deposit = new Deposit(walletRepository, accountRepository);
-  const withdraw = new Withdraw(walletRepository, accountRepository);
+  const httpServer = new ExpressAdapter();
 
-  const expressAdapter = new ExpressAdapter();
+  Registry.getInstance().register("httpServer", httpServer);
 
-  new AccountController(expressAdapter, signUp, getAccount);
-  new BalanceController(expressAdapter, deposit, withdraw);
+  Registry.getInstance().register("databaseConnection", new PGPromiseAdapter());
+  Registry.getInstance().register("accountRepository", new AccountRepositoryDatabase());
+  Registry.getInstance().register("walletRepository", new WalletRepositoryDatabase());
 
-  expressAdapter.listen(PORT);
+  Registry.getInstance().register("signUp", new SignUp());
+  Registry.getInstance().register("deposit", new Deposit());
+  Registry.getInstance().register("withdraw", new Withdraw());
+  Registry.getInstance().register("getAccount", new GetAccount());
+
+  new AccountController();
+  new BalanceController();
+
+  httpServer.listen(PORT);
 }
 
 main();

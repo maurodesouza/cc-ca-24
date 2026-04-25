@@ -1,6 +1,7 @@
 import { Wallet } from "../../domain/wallet";
 import { Balance } from "../../domain/balance";
 import { DatabaseConnection } from "../../application/database/database-connection";
+import { inject } from "../di/registry";
 
 export interface WalletRepository {
   save(wallet: Wallet): Promise<void>;
@@ -9,7 +10,8 @@ export interface WalletRepository {
 }
 
 export class WalletRepositoryDatabase implements WalletRepository {
-  constructor(private connection: DatabaseConnection) {}
+  @inject("databaseConnection")
+  private readonly connection!: DatabaseConnection;
 
   async save(wallet: Wallet): Promise<void> {
     for (const balance of wallet.balances) {

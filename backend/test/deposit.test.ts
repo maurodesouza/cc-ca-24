@@ -4,6 +4,7 @@ import { GetAccount } from "../src/application/use-cases/get-account";
 import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
 import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-repository";
+import { Registry } from "../src/infra/di/registry";
 
 let deposit: Deposit;
 let signUp: SignUp;
@@ -13,15 +14,20 @@ let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
-  const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
-  const walletRepository = new WalletRepositoryDatabase(pgPromiseAdapter);
+  Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
+  Registry.getInstance().register("accountRepository", new AccountRepositoryDatabase());
+  Registry.getInstance().register("walletRepository", new WalletRepositoryDatabase());
+  Registry.getInstance().register("deposit", new Deposit());
+  Registry.getInstance().register("signUp", new SignUp());
+  Registry.getInstance().register("getAccount", new GetAccount());
 
-  deposit = new Deposit(walletRepository, accountRepository);
-  signUp = new SignUp(accountRepository);
-  getAccount = new GetAccount(accountRepository, walletRepository);
+  deposit = new Deposit();
+  signUp = new SignUp();
+  getAccount = new GetAccount();
 });
 
 afterEach(async () => {
+  Registry.getInstance().dependencies.clear();
   await pgPromiseAdapter.close();
 });
 
