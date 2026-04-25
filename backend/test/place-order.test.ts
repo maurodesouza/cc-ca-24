@@ -169,7 +169,7 @@ describe("Place Order", () => {
     const BTCdeposit = {
       accountId: outputSignup.accountId,
       assetId: "BTC",
-      quantity: 2
+      quantity: 5
     };
 
     const USDdeposit = {
@@ -185,7 +185,7 @@ describe("Place Order", () => {
       accountId: outputSignup.accountId,
       marketId: "BTC-USD",
       side: "sell",
-      quantity: 5,
+      quantity: 4,
       price: 5000
     };
 
@@ -216,7 +216,7 @@ describe("Place Order", () => {
     const BTCdeposit = {
       accountId: outputSignup.accountId,
       assetId: "BTC",
-      quantity: 2
+      quantity: 5
     };
 
     const USDdeposit = {
@@ -240,7 +240,7 @@ describe("Place Order", () => {
       accountId: outputSignup.accountId,
       marketId: "BTC-USD",
       side: "buy",
-      quantity: 1,
+      quantity: 2,
       price: 5000
     };
 
