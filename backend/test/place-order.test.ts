@@ -13,6 +13,7 @@ let signUp: SignUp;
 let getAccount: GetAccount;
 let getOrder: GetOrder;
 let placeOrder: PlaceOrder;
+let orderRepository: OrderRepositoryDatabase;
 
 let pgPromiseAdapter: PGPromiseAdapter;
 
@@ -20,7 +21,7 @@ beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
   const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
   const walletRepository = new WalletRepositoryDatabase(pgPromiseAdapter);
-  const orderRepository = new OrderRepositoryDatabase(pgPromiseAdapter);
+  orderRepository = new OrderRepositoryDatabase(pgPromiseAdapter);
 
   deposit = new Deposit(walletRepository, accountRepository);
   signUp = new SignUp(accountRepository);
@@ -30,6 +31,7 @@ beforeEach(() => {
 });
 
 afterEach(async () => {
+  await orderRepository.clear();
   await pgPromiseAdapter.close();
 });
 

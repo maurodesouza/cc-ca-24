@@ -7,6 +7,7 @@ export interface OrderRepository {
   update(order: Order): Promise<void>;
   getHighestBid(marketId: string): Promise<Order | null>;
   getLowestAsk(marketId: string): Promise<Order | null>;
+  clear(): Promise<void>;
 }
 
 export class OrderRepositoryDatabase implements OrderRepository {
@@ -97,5 +98,9 @@ export class OrderRepositoryDatabase implements OrderRepository {
       orderRaw.status,
       orderRaw.timestamp,
     );
+  }
+
+  async clear(): Promise<void> {
+    await this.connection.query("delete from ccca.order", []);
   }
 }
