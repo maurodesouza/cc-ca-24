@@ -2,6 +2,7 @@ import { GetAccount } from "../src/application/use-cases/get-account";
 import { SignUp } from "../src/application/use-cases/signup";
 import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
+import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-repository";
 
 let getAccount: GetAccount;
 let signUp: SignUp;
@@ -9,9 +10,10 @@ let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
-  const AccountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
-  getAccount = new GetAccount(AccountRepository);
-  signUp = new SignUp(AccountRepository);
+  const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
+  const walletRepository = new WalletRepositoryDatabase(pgPromiseAdapter);
+  getAccount = new GetAccount(accountRepository, walletRepository);
+  signUp = new SignUp(accountRepository);
 });
 
 afterEach(async () => {

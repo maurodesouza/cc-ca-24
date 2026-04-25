@@ -3,6 +3,7 @@ import { Deposit } from "../src/application/use-cases/deposit";
 import { GetAccount } from "../src/application/use-cases/get-account";
 import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
+import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-repository";
 import { GetOrder } from "../src/application/use-cases/get-order";
 import { OrderRepositoryDatabase } from "../src/infra/repository/order-repository";
 import { PlaceOrder } from "../src/application/use-cases/place-order";
@@ -18,13 +19,14 @@ let pgPromiseAdapter: PGPromiseAdapter;
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
   const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
+  const walletRepository = new WalletRepositoryDatabase(pgPromiseAdapter);
   const orderRepository = new OrderRepositoryDatabase(pgPromiseAdapter);
 
-  deposit = new Deposit(accountRepository);
+  deposit = new Deposit(walletRepository, accountRepository);
   signUp = new SignUp(accountRepository);
-  getAccount = new GetAccount(accountRepository);
+  getAccount = new GetAccount(accountRepository, walletRepository);
   getOrder = new GetOrder(orderRepository);
-  placeOrder = new PlaceOrder(accountRepository, orderRepository);
+  placeOrder = new PlaceOrder(walletRepository, accountRepository, orderRepository);
 });
 
 afterEach(async () => {
@@ -93,6 +95,6 @@ describe("Place Order", () => {
       price: 78000
     }
 
-    expect(() => placeOrder.execute(inputOrder)).rejects.toThrow("Insufficient balance")
+    expect(() => placeOrder.execute(inputOrder)).rejects.toThrow("Insufficient funds")
   });
 });

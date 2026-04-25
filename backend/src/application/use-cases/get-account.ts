@@ -1,4 +1,5 @@
 import { AccountRepository } from "../../infra/repository/account-repository";
+import { WalletRepository } from "../../infra/repository/wallet-repository";
 
 type Balance = {
   assetId: string;
@@ -16,17 +17,18 @@ type Output = {
 
 export class GetAccount {
   accountRepository: AccountRepository;
+  walletRepository: WalletRepository;
 
-  constructor(accountRepository: AccountRepository) {
+  constructor(accountRepository: AccountRepository, walletRepository: WalletRepository) {
     this.accountRepository = accountRepository;
+    this.walletRepository = walletRepository;
   }
 
   async execute(accountId: string): Promise<Output> {
     const account = await this.accountRepository.getById(accountId);
+    if (!account) throw new Error("Account not found");
 
-    if (!account) {
-      throw new Error("Account not found");
-    }
+    const wallet = await this.walletRepository.getByAccountId(account.getAccountId());
 
     const output = {
       accountId: account.getAccountId(),
@@ -34,7 +36,7 @@ export class GetAccount {
       email: account.getEmail(),
       password: account.getPassword(),
       document: account.getDocument(),
-      balances: account.balances.map((balance) => ({
+      balances: wallet.balances.map((balance) => ({
         assetId: balance.getAssetId(),
         quantity: balance.getQuantity()
       })),

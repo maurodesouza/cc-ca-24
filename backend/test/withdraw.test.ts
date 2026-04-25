@@ -4,6 +4,7 @@ import { Deposit } from "../src/application/use-cases/deposit";
 import { GetAccount } from "../src/application/use-cases/get-account";
 import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
+import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-repository";
 
 let withdraw: Withdraw;
 let deposit: Deposit;
@@ -14,11 +15,12 @@ let pgPromiseAdapter: PGPromiseAdapter;
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
   const accountRepository = new AccountRepositoryDatabase(pgPromiseAdapter);
+  const walletRepository = new WalletRepositoryDatabase(pgPromiseAdapter);
 
-  withdraw = new Withdraw(accountRepository);
-  deposit = new Deposit(accountRepository);
+  withdraw = new Withdraw(walletRepository, accountRepository);
+  deposit = new Deposit(walletRepository, accountRepository);
   signUp = new SignUp(accountRepository);
-  getAccount = new GetAccount(accountRepository);
+  getAccount = new GetAccount(accountRepository, walletRepository);
 });
 
 afterEach(async () => {
