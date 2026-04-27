@@ -25,7 +25,7 @@ export class AccountRepositoryORM implements AccountRepository {
   }
 
   async getById(accountId: string): Promise<Account> {
-    const accountModel = await this.orm.getUnique(AccountModel, {
+    const accountModel = await this.orm.findOne(AccountModel, {
       where: { account_id: accountId }
     });
 

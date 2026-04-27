@@ -4,6 +4,7 @@ import { DatabaseConnection } from "../../application/database/database-connecti
 export type Query = {
   where?: { [key: string]: any };
   select?: string[];
+  order?: { [key: string]: "asc" | "desc" };
 }
 
 export class ORM {
@@ -31,8 +32,9 @@ export class ORM {
     }, { updateColumns: [], whereColumns: [] });
 
 
-    const setColumns = updateColumns.map(column => column.name).join(", ");
-    const setParams = updateColumns.map((_, index) => `$${index + 1}`).join(", ");
+    const setClause = updateColumns
+      .map((column, index) => `${column.name} = $${index + 1}`)
+      .join(", ");
     const setValues = updateColumns.map(column => model[column.property]);
 
     const whereConditions = whereColumns
@@ -42,13 +44,13 @@ export class ORM {
       .join(" and ");
     const whereValues = whereColumns.map(column => model[column.property]);
 
-    const query = `update ${model.schema}.${model.table} set ${setColumns} = ${setParams} where ${whereConditions}`;
+    const query = `update ${model.schema}.${model.table} set ${setClause} where ${whereConditions}`;
 
     await this.connection.query(query, [...setValues, ...whereValues]);
   }
 
-  async getUnique<T extends Model>(modelClass: new (...args: any[]) => T, query: Query): Promise<T | undefined> {
-    const { where, select } = query;
+  async findOne<T extends Model>(modelClass: new (...args: any[]) => T, query: Query): Promise<T | undefined> {
+    const { where, select, order } = query;
 
     const modelInstance = new modelClass();
     const columns = select || modelInstance.columns.map(c => c.name);
@@ -65,7 +67,13 @@ export class ORM {
       whereClause = `where ${conditions.join(" and ")}`;
     }
 
-    const sql = `select ${selectClause} from ${modelInstance.schema}.${modelInstance.table} ${whereClause} limit 1`;
+    let orderClause = "";
+    if (order) {
+      const orderConditions = Object.keys(order).map(key => `${key} ${order[key]}`);
+      orderClause = `order by ${orderConditions.join(", ")}`;
+    }
+
+    const sql = `select ${selectClause} from ${modelInstance.schema}.${modelInstance.table} ${whereClause} ${orderClause} limit 1`;
     const [result] = await this.connection.query(sql, values);
 
     if (!result) return;
@@ -78,6 +86,11 @@ export class ORM {
     }
 
     return modelObj;
+  }
+
+  async clear<T extends Model>(modelClass: new (...args: any[]) => T) {
+    const model = new modelClass();
+    await this.connection.query(`delete from ${model.schema}.${model.table}`, []);
   }
 }
 

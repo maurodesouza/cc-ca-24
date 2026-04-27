@@ -1,6 +1,8 @@
 import { Order } from "../../domain/order";
 import { DatabaseConnection } from "../../application/database/database-connection";
 import { inject } from "../di/registry";
+import { OrderModel } from "../orm/models/order-model";
+import { ORM } from "../orm/orm";
 
 export interface OrderRepository {
   save(order: Order): Promise<void>;
@@ -9,6 +11,54 @@ export interface OrderRepository {
   getHighestBid(marketId: string): Promise<Order | null>;
   getLowestAsk(marketId: string): Promise<Order | null>;
   clear(): Promise<void>;
+}
+
+export class OrderRepositoryORM implements OrderRepository {
+  @inject("orm")
+  private readonly orm!: ORM;
+
+  async save(order: Order): Promise<void> {
+    const orderModel = OrderModel.fromEntity(order);
+    await this.orm.save(orderModel);
+  }
+
+  async getById(orderId: string): Promise<Order> {
+    const orderModel = await this.orm.findOne(OrderModel, { where: { order_id: orderId } });
+    if (!orderModel) throw new Error("Order not found");
+
+    return orderModel.toEntity();
+  }
+
+  async update(order: Order): Promise<void> {
+    const orderModel = OrderModel.fromEntity(order);
+    await this.orm.update(orderModel);
+  }
+
+  async getHighestBid(marketId: string): Promise<Order | null> {
+    const orderModel = await this.orm.findOne(OrderModel, {
+      where: { market_id: marketId, side: 'buy', status: "open" },
+      order: { price: 'desc', timestamp: 'asc' }
+    });
+
+    if (!orderModel) return null;
+
+    return orderModel.toEntity();
+  }
+
+  async getLowestAsk(marketId: string): Promise<Order | null> {
+    const orderModel = await this.orm.findOne(OrderModel, {
+      where: { market_id: marketId, side: 'sell', status: "open" },
+      order: { price: 'asc', timestamp: 'asc' }
+    });
+
+    if (!orderModel) return null;
+
+    return orderModel.toEntity();
+  }
+
+  async clear(): Promise<void> {
+    await this.orm.clear(OrderModel);
+  }
 }
 
 export class OrderRepositoryDatabase implements OrderRepository {

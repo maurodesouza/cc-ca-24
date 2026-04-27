@@ -40,7 +40,7 @@ describe("ORM", () => {
     const accountModel = AccountModel.fromEntity(account);
 
     await orm.save(accountModel)
-    const persistedAccount = await orm.getUnique(AccountModel, { where: { account_id: account.getAccountId() } })
+    const persistedAccount = await orm.findOne(AccountModel, { where: { account_id: account.getAccountId() } })
 
     expect(persistedAccount).toBeDefined()
     expect(persistedAccount?.accountId).toBe(account.getAccountId())

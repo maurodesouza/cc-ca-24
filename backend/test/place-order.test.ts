@@ -5,7 +5,7 @@ import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 import { AccountRepositoryORM } from "../src/infra/repository/account-repository";
 import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-repository";
 import { GetOrder } from "../src/application/use-cases/get-order";
-import { OrderRepositoryDatabase } from "../src/infra/repository/order-repository";
+import { OrderRepositoryORM } from "../src/infra/repository/order-repository";
 import { PlaceOrder } from "../src/application/use-cases/place-order";
 import { Registry } from "../src/infra/di/registry";
 import { ORM } from "../src/infra/orm/orm";
@@ -15,7 +15,7 @@ let signUp: SignUp;
 let getAccount: GetAccount;
 let getOrder: GetOrder;
 let placeOrder: PlaceOrder;
-let orderRepository: OrderRepositoryDatabase;
+let orderRepository: OrderRepositoryORM;
 
 let pgPromiseAdapter: PGPromiseAdapter;
 
@@ -25,7 +25,7 @@ beforeEach(() => {
   Registry.getInstance().register("orm", new ORM());
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
   Registry.getInstance().register("walletRepository", new WalletRepositoryDatabase());
-  Registry.getInstance().register("orderRepository", new OrderRepositoryDatabase());
+  Registry.getInstance().register("orderRepository", new OrderRepositoryORM());
   Registry.getInstance().register("deposit", new Deposit());
   Registry.getInstance().register("signUp", new SignUp());
   Registry.getInstance().register("getAccount", new GetAccount());
@@ -37,7 +37,7 @@ beforeEach(() => {
   getAccount = new GetAccount();
   getOrder = new GetOrder();
   placeOrder = new PlaceOrder();
-  orderRepository = new OrderRepositoryDatabase();
+  orderRepository = new OrderRepositoryORM();
 });
 
 afterEach(async () => {
