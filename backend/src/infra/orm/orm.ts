@@ -139,14 +139,14 @@ export class ORM {
 
     if (!result) return;
 
-    const modelObj = new modelClass()
+    const instance = new modelClass()
     for (const column of modelInstance.columns) {
       if (result[column.name] !== undefined) {
-        (modelObj as any)[column.property] = result[column.name];
+        (instance as any)[column.property] = result[column.name];
       }
     }
 
-    return modelObj;
+    return instance;
   }
 
   async clear<T extends Model>(modelClass: new (...args: any[]) => T) {
