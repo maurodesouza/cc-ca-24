@@ -2,12 +2,13 @@ import { SignUp } from "../src/application/use-cases/signup";
 import { Deposit } from "../src/application/use-cases/deposit";
 import { GetAccount } from "../src/application/use-cases/get-account";
 import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
-import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
+import { AccountRepositoryORM } from "../src/infra/repository/account-repository";
 import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-repository";
 import { GetOrder } from "../src/application/use-cases/get-order";
 import { OrderRepositoryDatabase } from "../src/infra/repository/order-repository";
 import { PlaceOrder } from "../src/application/use-cases/place-order";
 import { Registry } from "../src/infra/di/registry";
+import { ORM } from "../src/infra/orm/orm";
 
 let deposit: Deposit;
 let signUp: SignUp;
@@ -21,7 +22,8 @@ let pgPromiseAdapter: PGPromiseAdapter;
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
   Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
-  Registry.getInstance().register("accountRepository", new AccountRepositoryDatabase());
+  Registry.getInstance().register("orm", new ORM());
+  Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
   Registry.getInstance().register("walletRepository", new WalletRepositoryDatabase());
   Registry.getInstance().register("orderRepository", new OrderRepositoryDatabase());
   Registry.getInstance().register("deposit", new Deposit());

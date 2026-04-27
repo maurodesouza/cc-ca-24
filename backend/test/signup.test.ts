@@ -1,9 +1,10 @@
 import sinon from "sinon";
 
 import { SignUp } from "../src/application/use-cases/signup";
-import { AccountRepositoryDatabase } from "../src/infra/repository/account-repository";
+import { AccountRepositoryORM } from "../src/infra/repository/account-repository";
 import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 import { Registry } from "../src/infra/di/registry";
+import { ORM } from "../src/infra/orm/orm";
 
 import * as mailer from "../src/infra/mail/mailer";
 
@@ -20,7 +21,8 @@ let pgPromiseAdapter: PGPromiseAdapter;
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
   Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
-  Registry.getInstance().register("accountRepository", new AccountRepositoryDatabase());
+  Registry.getInstance().register("orm", new ORM());
+  Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
   Registry.getInstance().register("signUp", new SignUp());
 
   signUp = new SignUp();

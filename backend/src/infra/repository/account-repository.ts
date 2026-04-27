@@ -1,13 +1,39 @@
 import { Account } from "../../domain/account";
 import { DatabaseConnection } from "../../application/database/database-connection";
 import { inject } from "../di/registry";
+import { ORM } from "../orm/orm";
+import { AccountModel } from "../orm/models/account-model";
 
 export interface AccountRepository {
   save(account: Account): Promise<void>;
   update(account: Account): Promise<void>;
   getById(accountId: string): Promise<Account>;
 }
+export class AccountRepositoryORM implements AccountRepository {
+  @inject("orm")
+  private readonly orm!: ORM;
 
+  async save(account: Account): Promise<void> {
+    const accountModel = AccountModel.fromEntity(account)
+
+    await this.orm.save(accountModel)
+  }
+
+  async update(account: Account): Promise<void> {
+    const accountModel = AccountModel.fromEntity(account)
+    await this.orm.update(accountModel)
+  }
+
+  async getById(accountId: string): Promise<Account> {
+    const accountModel = await this.orm.getUnique(AccountModel, {
+      where: { account_id: accountId }
+    });
+
+    if (!accountModel) throw new Error("Account not found");
+
+    return accountModel.toEntity();
+  }
+}
 export class AccountRepositoryDatabase implements AccountRepository {
   @inject("databaseConnection")
   private readonly connection!: DatabaseConnection;
