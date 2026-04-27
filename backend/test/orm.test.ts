@@ -1,13 +1,9 @@
-import { Deposit } from "../src/application/use-cases/deposit";
-import { GetAccount } from "../src/application/use-cases/get-account";
-import { SignUp } from "../src/application/use-cases/signup";
 import { Account } from "../src/domain/account";
 import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 import { Registry } from "../src/infra/di/registry";
 import { AccountModel } from "../src/infra/orm/models/account-model";
 import { ORM } from "../src/infra/orm/orm";
 import { AccountRepositoryORM } from "../src/infra/repository/account-repository";
-import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-repository";
 
 const validAccount = {
   name: "John Doe",

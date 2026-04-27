@@ -9,7 +9,7 @@ import { AccountController } from "./infra/controllers/account-controller";
 import { BalanceController } from "./infra/controllers/balance-controller";
 import { ExpressAdapter } from "./infra/http/express-adapter";
 import { AccountRepositoryORM } from "./infra/repository/account-repository";
-import { WalletRepositoryDatabase } from "./infra/repository/wallet-repository";
+import { WalletRepositoryORM } from "./infra/repository/wallet-repository";
 import { SignUp } from "./application/use-cases/signup";
 import { Registry } from "./infra/di/registry";
 import { ORM } from "./infra/orm/orm";
@@ -29,7 +29,7 @@ function main() {
 
   Registry.getInstance().register("databaseConnection", new PGPromiseAdapter());
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
-  Registry.getInstance().register("walletRepository", new WalletRepositoryDatabase());
+  Registry.getInstance().register("walletRepository", new WalletRepositoryORM());
 
   Registry.getInstance().register("signUp", new SignUp());
   Registry.getInstance().register("deposit", new Deposit());

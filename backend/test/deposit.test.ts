@@ -3,7 +3,7 @@ import { Deposit } from "../src/application/use-cases/deposit";
 import { GetAccount } from "../src/application/use-cases/get-account";
 import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
 import { AccountRepositoryORM } from "../src/infra/repository/account-repository";
-import { WalletRepositoryDatabase } from "../src/infra/repository/wallet-repository";
+import { WalletRepositoryORM } from "../src/infra/repository/wallet-repository";
 import { Registry } from "../src/infra/di/registry";
 import { ORM } from "../src/infra/orm/orm";
 
@@ -18,7 +18,7 @@ beforeEach(() => {
   Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
   Registry.getInstance().register("orm", new ORM());
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
-  Registry.getInstance().register("walletRepository", new WalletRepositoryDatabase());
+  Registry.getInstance().register("walletRepository", new WalletRepositoryORM());
   Registry.getInstance().register("deposit", new Deposit());
   Registry.getInstance().register("signUp", new SignUp());
   Registry.getInstance().register("getAccount", new GetAccount());
