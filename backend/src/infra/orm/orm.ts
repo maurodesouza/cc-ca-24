@@ -49,6 +49,67 @@ export class ORM {
     await this.connection.query(query, [...setValues, ...whereValues]);
   }
 
+  async deleteMany<T extends Model>(modelClass: new (...args: any[]) => T, query: Pick<Query, 'where'>) {
+    const { where } = query;
+
+    let whereClause = "";
+    let values: any[] = [];
+
+    if (where) {
+      const conditions = Object.keys(where).map((key, index) => {
+        values.push(where[key]);
+        return `${key} = $${index + 1}`;
+      });
+      whereClause = `where ${conditions.join(" and ")}`;
+    }
+
+    const model = new modelClass();
+    const sql = `delete from ${model.schema}.${model.table} ${whereClause}`;
+
+    await this.connection.query(sql, values);
+  }
+
+  async findMany<T extends Model>(modelClass: new (...args: any[]) => T, query: Query): Promise<T[]> {
+    const { where, select, order } = query;
+
+    const modelInstance = new modelClass();
+    const columns = select || modelInstance.columns.map(c => c.name);
+    const selectClause = columns.join(", ");
+
+    let whereClause = "";
+    let values: any[] = [];
+
+    if (where) {
+      const conditions = Object.keys(where).map((key, index) => {
+        values.push(where[key]);
+        return `${key} = $${index + 1}`;
+      });
+      whereClause = `where ${conditions.join(" and ")}`;
+    }
+
+    let orderClause = "";
+    if (order) {
+      const orderConditions = Object.keys(order).map((key) => {
+        const direction = order[key].toUpperCase() === "ASC" ? "ASC" : "DESC";
+        return `${key} ${direction}`;
+      });
+      orderClause = `order by ${orderConditions.join(", ")}`;
+    }
+
+    const sql = `select ${selectClause} from ${modelInstance.schema}.${modelInstance.table} ${whereClause} ${orderClause}`;
+    const result = await this.connection.query(sql, values);
+
+    return result.map((row: any) => {
+      const instance = new modelClass();
+
+      modelInstance.columns.forEach((column) => {
+        (instance as any)[column.property] = row[column.name];
+      });
+
+      return instance;
+    });
+  }
+
   async findOne<T extends Model>(modelClass: new (...args: any[]) => T, query: Query): Promise<T | undefined> {
     const { where, select, order } = query;
 
