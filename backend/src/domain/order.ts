@@ -117,8 +117,9 @@ export class Order {
   }
 
   fill(quantity: number, price: number) {
+    this.fillPrice = (this.fillPrice * this.fillQuantity.getValue() + price * quantity) / (this.fillQuantity.getValue() + quantity);
+
     this.fillQuantity = this.fillQuantity.add(new Quantity(quantity));
-    this.fillPrice = price;
 
     if (this.getAvailableQuantity() === 0) this.status = "closed";
   }

@@ -51,7 +51,7 @@ export class PlaceOrder {
 
       if (!highestBid || !lowestAsk || highestBid.getPrice() < lowestAsk.getPrice()) break;
 
-      const fillQuantity = Math.min(highestBid.getQuantity(), lowestAsk.getQuantity());
+      const fillQuantity = Math.min(highestBid.getAvailableQuantity(), lowestAsk.getAvailableQuantity());
       const fillPrice = (highestBid.getTimestamp() > lowestAsk.getTimestamp()) ? lowestAsk.getPrice() : highestBid.getPrice();
 
       highestBid.fill(fillQuantity, fillPrice);
