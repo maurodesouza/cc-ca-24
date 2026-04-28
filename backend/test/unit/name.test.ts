@@ -1,4 +1,4 @@
-import { Name } from "../src/domain/name";
+import { Name } from "../../src/domain/name";
 
 test.each([
     "Mauro de Souza",

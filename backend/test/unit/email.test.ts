@@ -1,4 +1,4 @@
-import { Email } from "../src/domain/email";
+import { Email } from "../../src/domain/email";
 
 test.each([
     "mauro@example.com",

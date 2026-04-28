@@ -1,5 +1,5 @@
-import { Order } from "../src/domain/order";
-import { UUID } from "../src/domain/uuid";
+import { Order } from "../../src/domain/order";
+import { UUID } from "../../src/domain/uuid";
 
 describe("Order", () => {
   test("Deve criar uma ordem", () => {

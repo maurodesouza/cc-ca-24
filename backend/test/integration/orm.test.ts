@@ -1,9 +1,9 @@
-import { Account } from "../src/domain/account";
-import { PGPromiseAdapter } from "../src/infra/database/pg-promise-adapter";
-import { Registry } from "../src/infra/di/registry";
-import { AccountModel } from "../src/infra/orm/models/account-model";
-import { ORM } from "../src/infra/orm/orm";
-import { AccountRepositoryORM } from "../src/infra/repository/account-repository";
+import { Account } from "../../src/domain/account";
+import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
+import { Registry } from "../../src/infra/di/registry";
+import { AccountModel } from "../../src/infra/orm/models/account-model";
+import { ORM } from "../../src/infra/orm/orm";
+import { AccountRepositoryORM } from "../../src/infra/repository/account-repository";
 
 const validAccount = {
   name: "John Doe",

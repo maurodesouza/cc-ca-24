@@ -1,4 +1,4 @@
-import { Balance } from "../src/domain/balance";
+import { Balance } from "../../src/domain/balance";
 
 describe("Balance", () => {
   describe("Creation", () => {

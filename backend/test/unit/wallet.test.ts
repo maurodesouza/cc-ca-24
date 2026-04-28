@@ -1,6 +1,6 @@
-import { Wallet } from "../src/domain/wallet";
-import { Order } from "../src/domain/order";
-import { UUID } from "../src/domain/uuid";
+import { Wallet } from "../../src/domain/wallet";
+import { Order } from "../../src/domain/order";
+import { UUID } from "../../src/domain/uuid";
 
 const accountId = UUID.create().value;
 

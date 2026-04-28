@@ -1,4 +1,4 @@
-import { Quantity } from "../src/domain/quantity";
+import { Quantity } from "../../src/domain/quantity";
 
 describe("Quantity", () => {
   test("Deve criar uma quantidade válida", () => {

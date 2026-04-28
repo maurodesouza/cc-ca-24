@@ -1,4 +1,4 @@
-import { UUID } from "../src/domain/uuid";
+import { UUID } from "../../src/domain/uuid";
 
 test("Deve criar um UUID com factory pattern", () => {
     const uuid = UUID.create();
