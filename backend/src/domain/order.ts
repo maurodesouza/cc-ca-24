@@ -112,6 +112,10 @@ export class Order {
     return this.side === "buy";
   }
 
+  isClosed() {
+    return this.status === "closed";
+  }
+
   getAvailableQuantity() {
     return this.quantity.getValue() - this.fillQuantity.getValue();
   }
