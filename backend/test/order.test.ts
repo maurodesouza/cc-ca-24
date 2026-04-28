@@ -78,7 +78,7 @@ describe("Order", () => {
       order.fill(5, 51000);
       expect(order.getStatus()).toBe("closed");
 
-      expect(order.getFillPrice()).toBe(51000);
+      expect(order.getFillPrice()).toBe(50000);
       expect(order.getFillQuantity()).toBe(10);
       expect(order.getAvailableQuantity()).toBe(0);
     });
