@@ -9,6 +9,9 @@ import { OrderRepositoryORM } from "../src/infra/repository/order-repository";
 import { PlaceOrder } from "../src/application/use-cases/place-order";
 import { Registry } from "../src/infra/di/registry";
 import { ORM } from "../src/infra/orm/orm";
+import { Mediator } from "../src/infra/mediator/mediator";
+import { OrderPlacedEvent } from "../src/domain/events/order-placed-event";
+import { ExecuteOrder } from "../src/application/use-cases/execute-order";
 
 let deposit: Deposit;
 let signUp: SignUp;
@@ -21,8 +24,12 @@ let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
+  const executeOrder = new ExecuteOrder()
+  const mediator = new Mediator();
+
   Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
   Registry.getInstance().register("orm", new ORM());
+  Registry.getInstance().register("mediator", mediator);
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
   Registry.getInstance().register("walletRepository", new WalletRepositoryORM());
   Registry.getInstance().register("orderRepository", new OrderRepositoryORM());
@@ -31,6 +38,10 @@ beforeEach(() => {
   Registry.getInstance().register("getAccount", new GetAccount());
   Registry.getInstance().register("getOrder", new GetOrder());
   Registry.getInstance().register("placeOrder", new PlaceOrder());
+
+  mediator.register(OrderPlacedEvent, async (event: OrderPlacedEvent) => {
+    await executeOrder.execute(event.getPayload());
+  });
 
   deposit = new Deposit();
   signUp = new SignUp();
@@ -266,5 +277,61 @@ describe("Place Order", () => {
     expect(order1.status).toBe("closed");
     expect(order2.status).toBe("closed");
     expect(order3.status).toBe("closed");
+  });
+
+  test("Deve calcular corretamente o preço medio de compra", async () => {
+    const outputSignup = await signUp.execute(accountInput);
+
+    const BTCdeposit = {
+      accountId: outputSignup.accountId,
+      assetId: "BTC",
+      quantity: 5
+    };
+
+    const USDdeposit = {
+      accountId: outputSignup.accountId,
+      assetId: "USD",
+      quantity: 200000
+    };
+
+    await deposit.execute(BTCdeposit);
+    await deposit.execute(USDdeposit);
+
+    const sellOrder1 = {
+      accountId: outputSignup.accountId,
+      marketId: "BTC-USD",
+      side: "sell",
+      quantity: 1,
+      price: 3000
+    };
+
+    const sellOrder2 = {
+      accountId: outputSignup.accountId,
+      marketId: "BTC-USD",
+      side: "sell",
+      quantity: 1,
+      price: 6000
+    };
+
+    const buyOrder = {
+      accountId: outputSignup.accountId,
+      marketId: "BTC-USD",
+      side: "buy",
+      quantity: 2,
+      price: 10000
+    };
+
+    const outputPlaceOrder1 = await placeOrder.execute(sellOrder1);
+    const outputPlaceOrder2 = await placeOrder.execute(sellOrder2);
+    const outputPlaceOrder3 = await placeOrder.execute(buyOrder);
+
+    const order1 = await getOrder.execute(outputPlaceOrder1.orderId);
+    const order2 = await getOrder.execute(outputPlaceOrder2.orderId);
+    const order3 = await getOrder.execute(outputPlaceOrder3.orderId);
+
+    expect(order1.status).toBe("closed");
+    expect(order2.status).toBe("closed");
+    expect(order3.status).toBe("closed");
+    expect(order3.fillPrice).toBe(4500);
   });
 });

@@ -13,6 +13,8 @@ import { WalletRepositoryORM } from "./infra/repository/wallet-repository";
 import { SignUp } from "./application/use-cases/signup";
 import { Registry } from "./infra/di/registry";
 import { ORM } from "./infra/orm/orm";
+import { Mediator } from "./infra/mediator/mediator";
+import { OrderController } from "./infra/controllers/order-controller";
 
 const PORT = 4156;
 
@@ -21,11 +23,12 @@ function main() {
   app.use(express.json());
   app.use(cors());
 
-
   const httpServer = new ExpressAdapter();
 
   Registry.getInstance().register("httpServer", httpServer);
   Registry.getInstance().register("orm", new ORM());
+
+  Registry.getInstance().register("mediator", new Mediator());
 
   Registry.getInstance().register("databaseConnection", new PGPromiseAdapter());
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
@@ -38,6 +41,7 @@ function main() {
 
   new AccountController();
   new BalanceController();
+  new OrderController();
 
   httpServer.listen(PORT);
 }

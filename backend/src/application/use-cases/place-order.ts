@@ -3,6 +3,8 @@ import { WalletRepository } from "../../infra/repository/wallet-repository";
 import { AccountRepository } from "../../infra/repository/account-repository";
 import { OrderRepository } from "../../infra/repository/order-repository";
 import { inject } from "../../infra/di/registry";
+import { Mediator } from "../../infra/mediator/mediator";
+import { OrderPlacedEvent } from "../../domain/events/order-placed-event";
 
 type Input = {
   accountId: string;
@@ -23,6 +25,8 @@ export class PlaceOrder {
   private readonly accountRepository!: AccountRepository;
   @inject("orderRepository")
   private readonly orderRepository!: OrderRepository;
+  @inject("mediator")
+  private readonly mediator!: Mediator;
 
   async execute(input: Input): Promise<Output> {
     const account = await this.accountRepository.getById(input.accountId);
@@ -59,6 +63,8 @@ export class PlaceOrder {
 
       await this.orderRepository.update(highestBid);
       await this.orderRepository.update(lowestAsk);
+
+      await this.mediator.notifyAll(new OrderPlacedEvent(input.marketId));
     }
 
     return {
