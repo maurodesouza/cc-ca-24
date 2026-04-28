@@ -188,5 +188,70 @@ describe("Book", () => {
       expect(book.buys).toHaveLength(0);
       expect(book.sells).toHaveLength(0);
     });
+
+    test("Deve chamar notifyAll quando faz match de ordens", async () => {
+      const notifiedOrders: Order[] = [];
+      const notifyAllSpy = jest.spyOn(book, "notifyAll").mockImplementation(async (event) => {
+        notifiedOrders.push(event.getPayload<Order>());
+      });
+
+      const buyOrder = Order.create(accountId, "BTC-USD", "buy", 1, 60000);
+      const sellOrder = Order.create(accountId, "BTC-USD", "sell", 1, 50000);
+
+      await book.insert(buyOrder);
+      await book.insert(sellOrder);
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(notifiedOrders.length).toBe(2);
+      expect(notifiedOrders.map(o => o.getOrderId())).toContain(buyOrder.getOrderId());
+      expect(notifiedOrders.map(o => o.getOrderId())).toContain(sellOrder.getOrderId());
+
+      notifyAllSpy.mockRestore();
+    });
+
+    test("Não deve chamar notifyAll quando não há match", async () => {
+      const notifyAllSpy = jest.spyOn(book, "notifyAll");
+
+      const buyOrder = Order.create(accountId, "BTC-USD", "buy", 1, 40000);
+      const sellOrder = Order.create(accountId, "BTC-USD", "sell", 1, 50000);
+
+      book.insert(buyOrder);
+      book.insert(sellOrder);
+
+      expect(notifyAllSpy).not.toHaveBeenCalled();
+
+      notifyAllSpy.mockRestore();
+    });
+
+    test("Deve chamar notifyAll para ordens que deram match com múltiplas ordens", async () => {
+      const notifiedOrders: Order[] = [];
+      const notifyAllSpy = jest.spyOn(book, "notifyAll").mockImplementation(async (event) => {
+        notifiedOrders.push(event.getPayload<Order>());
+      });
+
+      const buyOrder1 = Order.create(accountId, "BTC-USD", "buy", 1, 60000);
+      const buyOrder2 = Order.create(accountId, "BTC-USD", "buy", 1, 48000);
+      const sellOrder1 = Order.create(accountId, "BTC-USD", "sell", 1, 50000);
+      const sellOrder2 = Order.create(accountId, "BTC-USD", "sell", 1, 52000);
+
+      await book.insert(buyOrder1);
+      await book.insert(buyOrder2);
+      await book.insert(sellOrder1);
+      await book.insert(sellOrder2);
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      const notifiedOrderIds = notifiedOrders.map(o => o.getOrderId());
+
+      expect(notifiedOrderIds.length).toBe(2);
+      expect(notifiedOrderIds).toContain(buyOrder1.getOrderId());
+      expect(notifiedOrderIds).toContain(sellOrder1.getOrderId());
+
+      expect(notifiedOrderIds).not.toContain(buyOrder2.getOrderId());
+      expect(notifiedOrderIds).not.toContain(sellOrder2.getOrderId());
+
+      notifyAllSpy.mockRestore();
+    });
   });
 });
