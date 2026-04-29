@@ -15,6 +15,8 @@ import { Registry } from "./infra/di/registry";
 import { ORM } from "./infra/orm/orm";
 import { Mediator } from "./infra/mediator/mediator";
 import { OrderController } from "./infra/controllers/order-controller";
+import { UpdateOrder } from "./application/use-cases/update-order";
+import { Book } from "./domain/book";
 
 const PORT = 4156;
 
@@ -29,6 +31,7 @@ function main() {
   Registry.getInstance().register("orm", new ORM());
 
   Registry.getInstance().register("mediator", new Mediator());
+  Registry.getInstance().register("book", new Book("BTC-USD"));
 
   Registry.getInstance().register("databaseConnection", new PGPromiseAdapter());
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
@@ -38,6 +41,7 @@ function main() {
   Registry.getInstance().register("deposit", new Deposit());
   Registry.getInstance().register("withdraw", new Withdraw());
   Registry.getInstance().register("getAccount", new GetAccount());
+  Registry.getInstance().register("updateOrder", new UpdateOrder());
 
   new AccountController();
   new BalanceController();

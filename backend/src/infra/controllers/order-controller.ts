@@ -4,7 +4,9 @@ import { PlaceOrder } from "../../application/use-cases/place-order";
 import { GetOrder } from "../../application/use-cases/get-order";
 import { Mediator } from "../mediator/mediator";
 import { OrderPlacedEvent } from "../../domain/events/order-placed-event";
-import { ExecuteOrder } from "../../application/use-cases/execute-order";
+import { Book } from "../../domain/book";
+import { OrderFilledEvent } from "../../domain/events/order-filled-event";
+import { UpdateOrder } from "../../application/use-cases/update-order";
 
 export class OrderController {
   @inject("httpServer")
@@ -13,10 +15,12 @@ export class OrderController {
   private readonly placeOrder!: PlaceOrder;
   @inject("getOrder")
   private readonly getOrder!: GetOrder;
-  @inject("executeOrder")
-  private readonly executeOrder!: ExecuteOrder;
+  @inject("updateOrder")
+  private readonly updateOrder!: UpdateOrder;
   @inject("mediator")
   private readonly mediator!: Mediator;
+  @inject("book")
+  private readonly book!: Book;
 
   constructor() {
     this.httpServer.route("post", "/place-order", async (body: any) => {
@@ -30,7 +34,11 @@ export class OrderController {
     });
 
     this.mediator.register(OrderPlacedEvent, async (event: OrderPlacedEvent) => {
-      await this.executeOrder.execute(event.getPayload());
+      this.book.insert(event.getPayload());
+    });
+
+    this.book.register(OrderFilledEvent, async (event: OrderFilledEvent) => {
+      await this.updateOrder.execute(event.getPayload());
     });
   }
 }
