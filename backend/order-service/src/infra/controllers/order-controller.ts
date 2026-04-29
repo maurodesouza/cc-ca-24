@@ -33,6 +33,11 @@ export class OrderController {
       return output;
     });
 
+    this.httpServer.route("put", "/orders/:id", async (body: any, params: any) => {
+      const output = await this.updateOrder.execute({ ...body, id: params.id });
+      return output;
+    });
+
     this.mediator.register(OrderPlacedEvent, async (event: OrderPlacedEvent) => {
       this.book.insert(event.getPayload());
     });
