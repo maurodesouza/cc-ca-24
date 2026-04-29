@@ -94,10 +94,6 @@ describe("Account", () => {
     const outputGetOrder2 = (await axios.get(`http://localhost:4156/orders/${outputPlaceOrder2.orderId}`)).data;
     const outputGetOrder3 = (await axios.get(`http://localhost:4156/orders/${outputPlaceOrder3.orderId}`)).data;
 
-    console.log("outputGetOrder1", outputGetOrder1)
-    console.log("outputGetOrder2", outputGetOrder2)
-    console.log("outputGetOrder3", outputGetOrder3)
-
     expect(outputGetOrder1.fillQuantity).toBe(1);
     expect(outputGetOrder1.fillPrice).toBe(78000);
     expect(outputGetOrder1.status).toBe("closed");
