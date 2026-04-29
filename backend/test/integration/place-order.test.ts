@@ -40,7 +40,9 @@ beforeEach(() => {
   Registry.getInstance().register("placeOrder", new PlaceOrder());
 
   mediator.register(OrderPlacedEvent, async (event: OrderPlacedEvent) => {
-    await executeOrder.execute(event.getPayload());
+    const order = event.getPayload();
+
+    await executeOrder.execute(order.getMarketId());
   });
 
   deposit = new Deposit();

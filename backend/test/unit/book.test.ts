@@ -192,7 +192,7 @@ describe("Book", () => {
     test("Deve chamar notifyAll quando faz match de ordens", async () => {
       const notifiedOrders: Order[] = [];
       const notifyAllSpy = jest.spyOn(book, "notifyAll").mockImplementation(async (event) => {
-        notifiedOrders.push(event.getPayload<Order>());
+        notifiedOrders.push(event.getPayload());
       });
 
       const buyOrder = Order.create(accountId, "BTC-USD", "buy", 1, 60000);
@@ -227,7 +227,7 @@ describe("Book", () => {
     test("Deve chamar notifyAll para ordens que deram match com múltiplas ordens", async () => {
       const notifiedOrders: Order[] = [];
       const notifyAllSpy = jest.spyOn(book, "notifyAll").mockImplementation(async (event) => {
-        notifiedOrders.push(event.getPayload<Order>());
+        notifiedOrders.push(event.getPayload());
       });
 
       const buyOrder1 = Order.create(accountId, "BTC-USD", "buy", 1, 60000);
