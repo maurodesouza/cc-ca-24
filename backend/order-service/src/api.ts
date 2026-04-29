@@ -16,7 +16,7 @@ import { GetOrder } from "./application/use-cases/get-order";
 import { OrderRepositoryORM } from "./infra/repository/order-repository";
 import { PlaceOrder } from "./application/use-cases/place-order";
 import { AccountGatewayHTTP } from "./infra/gateway/account-gateway";
-import { Book } from "./domain/book";
+import { MatchEngineGatewayHTTP } from "./infra/gateway/match-engine-gateway";
 
 const PORT = 4157;
 
@@ -31,11 +31,11 @@ function main() {
   Registry.getInstance().register("orm", new ORM());
 
   Registry.getInstance().register("mediator", new Mediator());
-  Registry.getInstance().register("book", new Book("BTC-USD"));
 
   Registry.getInstance().register("databaseConnection", new PGPromiseAdapter());
   Registry.getInstance().register("walletRepository", new WalletRepositoryORM());
   Registry.getInstance().register("accountGateway", new AccountGatewayHTTP());
+  Registry.getInstance().register("matchEngineGateway", new MatchEngineGatewayHTTP());
   Registry.getInstance().register("orderRepository", new OrderRepositoryORM());
 
   Registry.getInstance().register("deposit", new Deposit());
