@@ -1,12 +1,12 @@
 import { Order } from "../order";
 import { Event } from "./event";
 
-export class OrderPlacedEvent extends Event {
+export class OrderPlacedEvent extends Event<Order> {
   constructor(private readonly order: Order) {
     super("order-placed");
   }
 
-  getPayload<T>(): T {
-    return this.order as T;
+  getPayload(): Order {
+    return this.order;
   }
 }
