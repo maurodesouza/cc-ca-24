@@ -38,7 +38,22 @@ export class OrderController {
     });
 
     this.book.register(OrderFilledEvent, async (event: OrderFilledEvent) => {
-      await this.updateOrder.execute(event.getPayload());
+      const order = event.getPayload()
+
+      const input = {
+        orderId: order.getOrderId(),
+        accountId: order.getAccountId(),
+        marketId: order.getMarketId(),
+        side: order.getSide(),
+        quantity: order.getQuantity(),
+        price: order.getPrice(),
+        fillQuantity: order.getFillQuantity(),
+        fillPrice: order.getFillPrice(),
+        status: order.getStatus(),
+        timestamp: order.getTimestamp(),
+      };
+
+      await this.updateOrder.execute(input);
     });
   }
 }
