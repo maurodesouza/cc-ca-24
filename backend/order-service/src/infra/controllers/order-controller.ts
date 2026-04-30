@@ -6,6 +6,8 @@ import { Mediator } from "../mediator/mediator";
 import { OrderPlacedEvent } from "../../domain/events/order-placed-event";
 import { UpdateOrder } from "../../application/use-cases/update-order";
 import { MatchEngineGateway } from "../gateway/match-engine-gateway";
+import { RabbitMQAdapter } from "../queue/rabbitmq-adapter";
+import { Order } from "../../domain/order";
 
 export class OrderController {
   @inject("httpServer")
@@ -20,6 +22,8 @@ export class OrderController {
   private readonly updateOrder!: UpdateOrder;
   @inject("mediator")
   private readonly mediator!: Mediator;
+  @inject("queue")
+  private readonly queue!: RabbitMQAdapter;
 
   constructor() {
     this.httpServer.route("post", "/place-order", async (body: any) => {
@@ -35,6 +39,23 @@ export class OrderController {
     this.httpServer.route("put", "/orders/:id", async (body: any, params: any) => {
       const output = await this.updateOrder.execute({ ...body, id: params.id });
       return output;
+    });
+
+    this.queue.consume("order-filled.update-order", async (message: any) => {
+      const input = {
+        orderId: message.orderId,
+        accountId: message.accountId,
+        marketId: message.marketId,
+        side: message.side,
+        quantity: message.quantity,
+        price: message.price,
+        fillQuantity: message.fillQuantity,
+        fillPrice: message.fillPrice,
+        status: message.status,
+        timestamp: new Date(message.timestamp)
+      };
+
+      await this.updateOrder.execute(input);
     });
 
     this.mediator.register(OrderPlacedEvent, async (event: OrderPlacedEvent) => {
@@ -53,7 +74,7 @@ export class OrderController {
         timestamp: order.getTimestamp(),
       };
 
-      await this.matchEngineGateway.insert(input);
+      await this.queue.publish("order-placed", input);
     });
   }
 }

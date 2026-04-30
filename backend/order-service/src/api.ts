@@ -17,20 +17,27 @@ import { OrderRepositoryORM } from "./infra/repository/order-repository";
 import { PlaceOrder } from "./application/use-cases/place-order";
 import { AccountGatewayHTTP } from "./infra/gateway/account-gateway";
 import { MatchEngineGatewayHTTP } from "./infra/gateway/match-engine-gateway";
+import { RabbitMQAdapter } from "./infra/queue/rabbitmq-adapter";
 
 const PORT = 4157;
 
-function main() {
+async function main() {
   const app = express();
   app.use(express.json());
   app.use(cors());
 
   const httpServer = new ExpressAdapter();
+  const queue = new RabbitMQAdapter();
+
+  await queue.connect();
+  await queue.setup("order-placed", "order-placed.insert-order-to-book");
+  await queue.setup("order-filled", "order-filled.update-order");
 
   Registry.getInstance().register("httpServer", httpServer);
   Registry.getInstance().register("orm", new ORM());
 
   Registry.getInstance().register("mediator", new Mediator());
+  Registry.getInstance().register("queue", queue);
 
   Registry.getInstance().register("databaseConnection", new PGPromiseAdapter());
   Registry.getInstance().register("walletRepository", new WalletRepositoryORM());

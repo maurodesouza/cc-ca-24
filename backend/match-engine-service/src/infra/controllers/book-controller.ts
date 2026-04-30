@@ -4,6 +4,7 @@ import { Order } from "../../domain/order";
 import { HTTPServer } from "../../application/http/http-server";
 import { OrderFilledEvent } from "../../domain/events/order-filled-event";
 import { OrderGateway } from "../gateway/order-gateway";
+import { RabbitMQAdapter } from "../queue/rabbitmq-adapter";
 
 export class BookController {
   @inject("httpServer")
@@ -12,6 +13,8 @@ export class BookController {
   private readonly book!: Book;
   @inject("orderGateway")
   private readonly orderGateway!: OrderGateway;
+  @inject("queue")
+  private readonly queue!: RabbitMQAdapter;
 
   constructor() {
     this.httpServer.route("post", "/markets/:marketId/orders", async (body: any, params: any) => {
@@ -26,6 +29,23 @@ export class BookController {
         body.fillPrice,
         body.status,
         new Date(body.timestamp)
+      );
+
+      this.book.insert(order);
+    });
+
+    this.queue.consume("order-placed.insert-order-to-book", async (message: any) => {
+      const order = new Order(
+        message.orderId,
+        message.accountId,
+        message.marketId,
+        message.side,
+        message.quantity,
+        message.price,
+        message.fillQuantity,
+        message.fillPrice,
+        message.status,
+        new Date(message.timestamp)
       );
 
       this.book.insert(order);
@@ -47,7 +67,7 @@ export class BookController {
         timestamp: order.getTimestamp(),
       };
 
-      await this.orderGateway.update(input);
+      await this.queue.publish("order-filled", input);
     });
   }
 }
