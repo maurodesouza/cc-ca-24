@@ -4,9 +4,9 @@ import { WalletRepositoryORM } from "../../src/infra/repository/wallet-repositor
 import { GetOrder } from "../../src/application/use-cases/get-order";
 import { OrderRepositoryORM } from "../../src/infra/repository/order-repository";
 import { PlaceOrder } from "../../src/application/use-cases/place-order";
-import { Registry } from "../../src/infra/di/registry";
+import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
-import { Mediator } from "../../src/infra/mediator/mediator";
+import { Mediator } from "../../src/infra/utils/mediator";
 import { OrderPlacedEvent } from "../../src/domain/events/order-placed-event";
 import { ExecuteOrder } from "../../src/application/use-cases/execute-order";
 import { AccountGatewayHTTP } from "../../src/infra/gateway/account-gateway";

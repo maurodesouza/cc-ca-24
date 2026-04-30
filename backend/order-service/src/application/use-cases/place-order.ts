@@ -1,8 +1,8 @@
 import { Order } from "../../domain/order";
 import { WalletRepository } from "../../infra/repository/wallet-repository";
 import { OrderRepository } from "../../infra/repository/order-repository";
-import { inject } from "../../infra/di/registry";
-import { Mediator } from "../../infra/mediator/mediator";
+import { inject } from "../../infra/utils/registry";
+import { Mediator } from "../../infra/utils/mediator";
 import { OrderPlacedEvent } from "../../domain/events/order-placed-event";
 import {  AccountGatewayHTTP } from "../../infra/gateway/account-gateway";
 

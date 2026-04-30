@@ -1,5 +1,5 @@
 import { WalletRepository } from "../../infra/repository/wallet-repository";
-import { inject } from "../../infra/di/registry";
+import { inject } from "../../infra/utils/registry";
 import { AccountGateway } from "../../infra/gateway/account-gateway";
 
 type Input = {

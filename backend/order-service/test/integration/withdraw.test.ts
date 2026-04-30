@@ -3,7 +3,7 @@ import { Deposit } from "../../src/application/use-cases/deposit";
 import { GetWallet } from "../../src/application/use-cases/get-wallet";
 import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
 import { WalletRepositoryORM } from "../../src/infra/repository/wallet-repository";
-import { Registry } from "../../src/infra/di/registry";
+import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
 import { AccountGatewayHTTP } from "../../src/infra/gateway/account-gateway";
 

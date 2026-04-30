@@ -1,6 +1,6 @@
 import { Order } from "../../domain/order";
 import { DatabaseConnection } from "../../application/database/database-connection";
-import { inject } from "../di/registry";
+import { inject } from "../utils/registry";
 import { OrderModel } from "../orm/models/order-model";
 import { ORM } from "../orm/orm";
 

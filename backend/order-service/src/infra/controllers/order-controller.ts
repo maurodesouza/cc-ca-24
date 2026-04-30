@@ -1,8 +1,8 @@
 import { HTTPServer } from "../../application/http/http-server";
-import { inject } from "../di/registry";
+import { inject } from "../utils/registry";
 import { PlaceOrder } from "../../application/use-cases/place-order";
 import { GetOrder } from "../../application/use-cases/get-order";
-import { Mediator } from "../mediator/mediator";
+import { Mediator } from "../utils/mediator";
 import { OrderPlacedEvent } from "../../domain/events/order-placed-event";
 import { UpdateOrder } from "../../application/use-cases/update-order";
 import { MatchEngineGateway } from "../gateway/match-engine-gateway";

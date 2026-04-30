@@ -1,7 +1,7 @@
 import { Deposit } from "../../application/use-cases/deposit";
 import { Withdraw } from "../../application/use-cases/withdraw";
 import { HTTPServer } from "../../application/http/http-server";
-import { inject } from "../di/registry";
+import { inject } from "../utils/registry";
 
 export class BalanceController {
   @inject("httpServer")

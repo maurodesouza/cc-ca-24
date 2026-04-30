@@ -1,5 +1,5 @@
 import { OrderRepository } from "../../infra/repository/order-repository";
-import { inject } from "../../infra/di/registry";
+import { inject } from "../../infra/utils/registry";
 import { Order } from "../../domain/order";
 
 type Input = {

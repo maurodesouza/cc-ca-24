@@ -1,7 +1,7 @@
 import { Wallet } from "../../domain/wallet";
 import { Balance } from "../../domain/balance";
 import { DatabaseConnection } from "../../application/database/database-connection";
-import { inject } from "../di/registry";
+import { inject } from "../utils/registry";
 import { ORM } from "../orm/orm";
 import { BalanceModel } from "../orm/models/balance-model";
 

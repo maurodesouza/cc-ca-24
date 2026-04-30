@@ -1,5 +1,5 @@
 import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
-import { Registry } from "../../src/infra/di/registry";
+import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
 import { Order } from "../../src/domain/order";
 import { OrderModel } from "../../src/infra/orm/models/order-model";

@@ -2,7 +2,7 @@ import axios from "axios";
 import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
 import { WalletRepositoryORM } from "../../src/infra/repository/wallet-repository";
 import { OrderRepositoryORM } from "../../src/infra/repository/order-repository";
-import { Registry } from "../../src/infra/di/registry";
+import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
 import { sleep } from "../../src/utils/sleep";
 
