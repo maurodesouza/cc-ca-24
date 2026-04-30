@@ -88,7 +88,7 @@ describe("Account", () => {
     const outputPlaceOrder2 = (await axios.post("http://localhost:4157/place-order", order2)).data;
     const outputPlaceOrder3 = (await axios.post("http://localhost:4157/place-order", order3)).data;
 
-    await sleep(200);
+    await sleep(500);
 
     const outputGetOrder1 = (await axios.get(`http://localhost:4157/orders/${outputPlaceOrder1.orderId}`)).data;
     const outputGetOrder2 = (await axios.get(`http://localhost:4157/orders/${outputPlaceOrder2.orderId}`)).data;
