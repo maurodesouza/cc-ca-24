@@ -1,28 +1,43 @@
 import express from "express";
 import cors from "cors";
 
+// Application - Use Cases
 import { Deposit } from "./application/use-cases/deposit";
 import { Withdraw } from "./application/use-cases/withdraw";
-import { PGPromiseAdapter } from "./infra/database/pg-promise-adapter";
-import { BalanceController } from "./infra/controllers/balance-controller";
-import { ExpressAdapter } from "./infra/http/express-adapter";
-import { WalletRepositoryORM } from "./infra/repository/wallet-repository";
-import { Registry } from "./infra/utils/registry";
-import { ORM } from "./infra/orm/orm";
-import { Mediator } from "./infra/utils/mediator";
-import { OrderController } from "./infra/controllers/order-controller";
-import { UpdateOrder } from "./application/use-cases/update-order";
 import { GetOrder } from "./application/use-cases/get-order";
-import { OrderRepositoryORM } from "./infra/repository/order-repository";
+import { UpdateOrder } from "./application/use-cases/update-order";
 import { PlaceOrder } from "./application/use-cases/place-order";
-import { AccountGatewayHTTP } from "./infra/gateway/account-gateway";
-import { MatchEngineGatewayHTTP } from "./infra/gateway/match-engine-gateway";
-import { RabbitMQAdapter } from "./infra/queue/rabbitmq-adapter";
 
+// Infrastructure - Controllers
+import { OrderController } from "./infra/controllers/order-controller";
+import { BalanceController } from "./infra/controllers/balance-controller";
+import { AccountController } from "./infra/controllers/account-controller";
+
+// Infrastructure - Repositories
+import { WalletRepositoryORM } from "./infra/repository/wallet-repository";
+import { OrderRepositoryORM } from "./infra/repository/order-repository";
+import { AccountReferenceRepositoryDatabase } from "./infra/repository/account-reference-repository";
+
+// Infrastructure - Gateways
+import { MatchEngineGatewayHTTP } from "./infra/gateway/match-engine-gateway";
 import { PaymentAGatewayHTTP } from "./infra/gateway/payment-A-gateway";
 import { PaymentBGatewayHTTP } from "./infra/gateway/payment-B-gateway";
 import { PaymentCGatewayHTTP } from "./infra/gateway/payment-C-gateway";
 import { PaymentDGatewayHTTP } from "./infra/gateway/payment-D-gateway";
+
+// Infrastructure - Database
+import { PGPromiseAdapter } from "./infra/database/pg-promise-adapter";
+
+// Infrastructure - HTTP
+import { ExpressAdapter } from "./infra/http/express-adapter";
+
+// Infrastructure - Queue
+import { RabbitMQAdapter } from "./infra/queue/rabbitmq-adapter";
+
+// Infrastructure - Utils
+import { Registry } from "./infra/utils/registry";
+import { Mediator } from "./infra/utils/mediator";
+import { ORM } from "./infra/orm/orm";
 
 const PORT = 4157;
 
@@ -46,9 +61,9 @@ async function main() {
 
   Registry.getInstance().register("databaseConnection", new PGPromiseAdapter());
   Registry.getInstance().register("walletRepository", new WalletRepositoryORM());
-  Registry.getInstance().register("accountGateway", new AccountGatewayHTTP());
   Registry.getInstance().register("matchEngineGateway", new MatchEngineGatewayHTTP());
   Registry.getInstance().register("orderRepository", new OrderRepositoryORM());
+  Registry.getInstance().register("accountReferenceRepository", new AccountReferenceRepositoryDatabase());
 
   Registry.getInstance().register("paymentAGateway", new PaymentAGatewayHTTP());
   Registry.getInstance().register("paymentBGateway", new PaymentBGatewayHTTP());
@@ -63,6 +78,7 @@ async function main() {
 
   new BalanceController();
   new OrderController();
+  new AccountController()
 
   httpServer.listen(PORT);
 }
