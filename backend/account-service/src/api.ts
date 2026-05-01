@@ -6,7 +6,6 @@ import { PGPromiseAdapter } from "./infra/database/pg-promise-adapter";
 
 import { ORM } from "./infra/orm/orm";
 import { Registry } from "./infra/utils/registry";
-import { Mediator } from "./infra/utils/mediator";
 import { AccountController } from "./infra/controllers/account-controller";
 import { AccountRepositoryORM } from "./infra/repository/account-repository";
 
@@ -36,7 +35,6 @@ async function main() {
   Registry.getInstance().register("mailer", new ResendAdapter());
 
   Registry.getInstance().register("orm", new ORM());
-  Registry.getInstance().register("mediator", new Mediator());
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
 
   Registry.getInstance().register("signUp", new SignUp());

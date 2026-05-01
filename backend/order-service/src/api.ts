@@ -35,7 +35,6 @@ import { RabbitMQAdapter } from "./infra/queue/rabbitmq-adapter";
 
 // Infrastructure - Utils
 import { Registry } from "./infra/utils/registry";
-import { Mediator } from "./infra/utils/mediator";
 import { ORM } from "./infra/orm/orm";
 
 
@@ -61,11 +60,9 @@ async function main() {
     type: "topic"
   });
 
-  Registry.getInstance().register("httpServer", httpServer);
   Registry.getInstance().register("orm", new ORM());
-
-  Registry.getInstance().register("mediator", new Mediator());
   Registry.getInstance().register("queue", queue);
+  Registry.getInstance().register("httpServer", httpServer);
 
   Registry.getInstance().register("databaseConnection", new PGPromiseAdapter());
   Registry.getInstance().register("walletRepository", new WalletRepositoryORM());
