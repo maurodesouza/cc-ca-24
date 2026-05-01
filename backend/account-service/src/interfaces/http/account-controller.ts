@@ -1,7 +1,7 @@
 import { HTTPServer } from "../../application/http/http-server";
 import { GetAccount } from "../../application/use-cases/get-account";
 import { SignUp } from "../../application/use-cases/signup";
-import { inject } from "../utils/registry";
+import { inject } from "../../infra/utils/registry";
 
 export class AccountController {
   @inject("httpServer")

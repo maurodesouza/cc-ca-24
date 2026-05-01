@@ -6,7 +6,7 @@ import { PGPromiseAdapter } from "./infra/database/pg-promise-adapter";
 
 import { ORM } from "./infra/orm/orm";
 import { Registry } from "./infra/utils/registry";
-import { AccountController } from "./infra/controllers/account-controller";
+import { AccountController } from "./interfaces/http/account-controller";
 import { AccountRepositoryORM } from "./infra/repository/account-repository";
 
 import { SignUp } from "./application/use-cases/signup";
