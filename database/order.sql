@@ -3,7 +3,7 @@ drop schema if exists ccca;
 create schema ccca;
 
 create table ccca.account (
-    account_id uuid primary key,
+    account_id uuid primary key
 );
 
 create table ccca.balance (
