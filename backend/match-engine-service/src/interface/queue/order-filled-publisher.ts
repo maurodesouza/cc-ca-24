@@ -29,6 +29,6 @@ export class OrderFilledPublisher {
       timestamp: order.getTimestamp(),
     };
 
-    await this.queue.publish("order-filled", input);
+    await this.queue.publish("matching-engine.events", input, { routingKey: "matching-engine.order-filled" });
   }
 }
