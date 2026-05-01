@@ -1,6 +1,7 @@
 import { AccountRepository } from "../../infra/repository/account-repository";
 import { Account } from "../../domain/account";
 import { inject } from "../../infra/utils/registry";
+import { RabbitMQAdapter } from "../../infra/queue/rabbitmq-adapter";
 import { ResendAdapter } from "../../infra/mail/resend-adapter";
 
 type Input = {
@@ -21,6 +22,8 @@ type Output = {
 export class SignUp {
   @inject("accountRepository")
   private readonly accountRepository!: AccountRepository;
+  @inject("queue")
+  private readonly queue!: RabbitMQAdapter;
   @inject("mailer")
   private readonly mailer!: ResendAdapter;
 
@@ -47,6 +50,8 @@ export class SignUp {
       password: account.getPassword(),
       document: account.getDocument(),
     }
+
+    await this.queue.publish("account.events", output, { routingKey: "account.created" });
 
     return output
   }

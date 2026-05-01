@@ -6,7 +6,7 @@ import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
 import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
 
-
+import { Queue } from "../../src/application/queue/queue";
 import { Mail } from "../../src/application/mail/mail";
 
 const validInput = {
@@ -15,6 +15,8 @@ const validInput = {
   document: "85486231016",
   password: "Password123"
 }
+
+let queueMock: Partial<Queue>
 let mailerMock: Partial<Mail>
 
 let signUp: SignUp;
@@ -24,6 +26,10 @@ beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
   signUp = new SignUp();
 
+  queueMock = {
+    publish: jest.fn().mockResolvedValue(undefined)
+  }
+
   mailerMock = {
     send: jest.fn().mockResolvedValue(undefined)
   }
@@ -32,6 +38,7 @@ beforeEach(() => {
   Registry.getInstance().register("orm", new ORM());
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
   Registry.getInstance().register("signUp", signUp);
+  Registry.getInstance().register("queue", queueMock);
   Registry.getInstance().register("mailer", mailerMock);
 });
 
@@ -50,70 +57,19 @@ describe("SignUp", () => {
     expect(signupOutput.name).toBe(input.name);
     expect(signupOutput.email).toBe(input.email);
     expect(signupOutput.document).toBe(input.document);
+
+    expect(queueMock.publish).toHaveBeenCalledWith("account.events", expect.objectContaining({
+      accountId: signupOutput.accountId,
+      email: signupOutput.email,
+    }), { routingKey: "account.created" });
+
+    expect(mailerMock.send).toHaveBeenCalledWith(expect.objectContaining({
+      to: signupOutput.email,
+      subject: "Welcome to our platform!",
+    }));
   });
 
-  test("Deve criar uma conta com stub", async () => {
-    const mailerStub = sinon.stub(mailer, "sendEmail").resolves();
 
-    const input = { ...validInput }
-
-    const signupOutput = await signUp.execute(input);
-
-    expect(signupOutput.accountId).toBeDefined();
-    expect(signupOutput.name).toBe(input.name);
-    expect(signupOutput.email).toBe(input.email);
-    expect(signupOutput.document).toBe(input.document);
-
-    mailerStub.restore();
-  });
-
-  test("Deve criar uma conta com spy", async () => {
-    const mailerSpy = sinon.spy(mailer, "sendEmail");
-
-    const input = { ...validInput }
-
-    const signupOutput = await signUp.execute(input);
-
-    expect(signupOutput.accountId).toBeDefined();
-    expect(signupOutput.name).toBe(input.name);
-    expect(signupOutput.email).toBe(input.email);
-    expect(signupOutput.document).toBe(input.document);
-
-    expect(mailerSpy.calledOnce).toBe(true);
-    expect(mailerSpy.calledWith({
-      to: input.email,
-      subject: "Account created",
-      body: "Your account has been created"
-    })).toBe(true);
-
-    mailerSpy.restore();
-  });
-
-  test("Deve criar uma conta com mock", async () => {
-    const mailerMock = sinon.mock(mailer);
-
-    mailerMock
-      .expects("sendEmail")
-      .once()
-      .withArgs({
-        to: validInput.email,
-        subject: "Account created",
-        body: "Your account has been created"
-      })
-      .resolves();
-
-    const input = { ...validInput }
-
-    const signupOutput = await signUp.execute(input);
-
-    expect(signupOutput.accountId).toBeDefined();
-    expect(signupOutput.name).toBe(input.name);
-    expect(signupOutput.email).toBe(input.email);
-    expect(signupOutput.document).toBe(input.document);
-
-    mailerMock.verify()
-    mailerMock.restore();
-  });
 
   test("Não deve criar conta com nome invalido", async () => {
     const input = {

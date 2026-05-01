@@ -15,6 +15,10 @@ beforeEach(() => {
   signUp = new SignUp();
   getAccount = new GetAccount();
 
+  const queueMock = {
+    publish: jest.fn().mockResolvedValue(undefined)
+  }
+
   const mailerMock = {
     send: jest.fn().mockResolvedValue(undefined)
   }
@@ -26,6 +30,7 @@ beforeEach(() => {
   Registry.getInstance().register("signUp", signUp);
   Registry.getInstance().register("getAccount", getAccount);
 
+  Registry.getInstance().register("queue", queueMock);
   Registry.getInstance().register("mailer", mailerMock);
 });
 
