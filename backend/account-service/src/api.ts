@@ -27,7 +27,7 @@ async function main() {
   const queue = new RabbitMQAdapter();
 
   await queue.connect();
-  await queue.setup("account.events", "orders.account.created", { routingKey: "account.created", type: "topic" });
+  await queue.setup("account.events", "order.account.created", { routingKey: "account.created", type: "topic" });
   await queue.setup("account.events", "projection.account.created", { routingKey: "account.created", type: "topic" });
 
   Registry.getInstance().register("httpServer", httpServer);
