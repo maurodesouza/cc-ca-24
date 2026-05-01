@@ -11,14 +11,22 @@ let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
-  Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
-  Registry.getInstance().register("orm", new ORM());
-  Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
-  Registry.getInstance().register("getAccount", new GetAccount());
-  Registry.getInstance().register("signUp", new SignUp());
 
-  getAccount = new GetAccount();
   signUp = new SignUp();
+  getAccount = new GetAccount();
+
+  const mailerMock = {
+    send: jest.fn().mockResolvedValue(undefined)
+  }
+
+  Registry.getInstance().register("orm", new ORM());
+  Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
+  Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
+
+  Registry.getInstance().register("signUp", signUp);
+  Registry.getInstance().register("getAccount", getAccount);
+
+  Registry.getInstance().register("mailer", mailerMock);
 });
 
 afterEach(async () => {

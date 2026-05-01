@@ -1,7 +1,7 @@
 import { AccountRepository } from "../../infra/repository/account-repository";
-import { sendEmail } from "../../infra/mail/mailer";
 import { Account } from "../../domain/account";
 import { inject } from "../../infra/utils/registry";
+import { ResendAdapter } from "../../infra/mail/resend-adapter";
 
 type Input = {
   name: string;
@@ -21,6 +21,8 @@ type Output = {
 export class SignUp {
   @inject("accountRepository")
   private readonly accountRepository!: AccountRepository;
+  @inject("mailer")
+  private readonly mailer!: ResendAdapter;
 
   async execute(input: Input): Promise<Output> {
     const account = Account.create(
@@ -32,7 +34,7 @@ export class SignUp {
 
     await this.accountRepository.save(account);
 
-    await sendEmail({
+    await this.mailer.send({
       to: account.getEmail(),
       subject: "Account created",
       body: "Your account has been created"

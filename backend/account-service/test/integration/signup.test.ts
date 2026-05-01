@@ -6,7 +6,8 @@ import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
 import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
 
-import * as mailer from "../../src/infra/mail/mailer";
+
+import { Mail } from "../../src/application/mail/mail";
 
 const validInput = {
   name: "John Doe",
@@ -14,6 +15,7 @@ const validInput = {
   document: "85486231016",
   password: "Password123"
 }
+let mailerMock: Partial<Mail>
 
 let signUp: SignUp;
 let pgPromiseAdapter: PGPromiseAdapter;
@@ -22,10 +24,15 @@ beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
   signUp = new SignUp();
 
+  mailerMock = {
+    send: jest.fn().mockResolvedValue(undefined)
+  }
+
   Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
   Registry.getInstance().register("orm", new ORM());
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
   Registry.getInstance().register("signUp", signUp);
+  Registry.getInstance().register("mailer", mailerMock);
 });
 
 afterEach(async () => {

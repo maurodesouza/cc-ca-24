@@ -12,6 +12,7 @@ import { AccountRepositoryORM } from "./infra/repository/account-repository";
 
 import { SignUp } from "./application/use-cases/signup";
 import { GetAccount } from "./application/use-cases/get-account";
+import { ResendAdapter } from "./infra/mail/resend-adapter";
 
 const PORT = 4156;
 
@@ -24,6 +25,7 @@ function main() {
 
   Registry.getInstance().register("httpServer", httpServer);
   Registry.getInstance().register("databaseConnection", new PGPromiseAdapter());
+  Registry.getInstance().register("mailer", new ResendAdapter());
 
   Registry.getInstance().register("orm", new ORM());
   Registry.getInstance().register("mediator", new Mediator());
