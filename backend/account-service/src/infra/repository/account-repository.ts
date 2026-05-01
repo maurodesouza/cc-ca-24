@@ -1,6 +1,6 @@
 import { Account } from "../../domain/account";
 import { DatabaseConnection } from "../../application/database/database-connection";
-import { inject } from "../di/registry";
+import { inject } from "../utils/registry";
 import { ORM } from "../orm/orm";
 import { AccountModel } from "../orm/models/account-model";
 

@@ -3,7 +3,7 @@ import sinon from "sinon";
 import { SignUp } from "../../src/application/use-cases/signup";
 import { AccountRepositoryORM } from "../../src/infra/repository/account-repository";
 import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
-import { Registry } from "../../src/infra/di/registry";
+import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
 
 import * as mailer from "../../src/infra/mail/mailer";

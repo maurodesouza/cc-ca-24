@@ -2,7 +2,7 @@ import { GetAccount } from "../../src/application/use-cases/get-account";
 import { SignUp } from "../../src/application/use-cases/signup";
 import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
 import { AccountRepositoryORM } from "../../src/infra/repository/account-repository";
-import { Registry } from "../../src/infra/di/registry";
+import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
 
 let getAccount: GetAccount;

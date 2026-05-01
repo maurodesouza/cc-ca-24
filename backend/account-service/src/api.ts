@@ -5,8 +5,8 @@ import { ExpressAdapter } from "./infra/http/express-adapter";
 import { PGPromiseAdapter } from "./infra/database/pg-promise-adapter";
 
 import { ORM } from "./infra/orm/orm";
-import { Registry } from "./infra/di/registry";
-import { Mediator } from "./infra/mediator/mediator";
+import { Registry } from "./infra/utils/registry";
+import { Mediator } from "./infra/utils/mediator";
 import { AccountController } from "./infra/controllers/account-controller";
 import { AccountRepositoryORM } from "./infra/repository/account-repository";
 

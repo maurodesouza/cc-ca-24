@@ -1,6 +1,6 @@
 import { Account } from "../../src/domain/account";
 import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
-import { Registry } from "../../src/infra/di/registry";
+import { Registry } from "../../src/infra/utils/registry";
 import { AccountModel } from "../../src/infra/orm/models/account-model";
 import { ORM } from "../../src/infra/orm/orm";
 import { AccountRepositoryORM } from "../../src/infra/repository/account-repository";

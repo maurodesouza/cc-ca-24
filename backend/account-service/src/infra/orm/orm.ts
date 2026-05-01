@@ -1,4 +1,4 @@
-import { inject } from "../di/registry";
+import { inject } from "../utils/registry";
 import { DatabaseConnection } from "../../application/database/database-connection";
 
 export type Query = {

@@ -1,4 +1,4 @@
-import { inject } from "../../infra/di/registry";
+import { inject } from "../../infra/utils/registry";
 import { AccountRepository } from "../../infra/repository/account-repository";
 
 type Output = {
