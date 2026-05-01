@@ -1,6 +1,6 @@
 import { WalletRepository } from "../../infra/repository/wallet-repository";
 import { inject } from "../../infra/utils/registry";
-import { AccountGateway } from "../../infra/gateway/account-gateway";
+import { AccountReferenceRepository } from "../../infra/repository/account-reference-repository";
 
 type Input = {
   accountId: string;
@@ -10,12 +10,12 @@ type Input = {
 export class Withdraw {
   @inject("walletRepository")
   private readonly walletRepository!: WalletRepository;
-  @inject("accountGateway")
-  private readonly accountGateway!: AccountGateway;
+  @inject("accountReferenceRepository")
+  private readonly accountReferenceRepository!: AccountReferenceRepository;
 
   async execute(input: Input): Promise<void> {
-    const account = await this.accountGateway.getById(input.accountId);
-    if (!account) throw new Error("Account not found");
+    const accountExists = await this.accountReferenceRepository.exist(input.accountId);
+    if (!accountExists) throw new Error("Account not found");
 
     const wallet = await this.walletRepository.getByAccountId(input.accountId);
     wallet.withdraw(input.assetId, input.quantity);

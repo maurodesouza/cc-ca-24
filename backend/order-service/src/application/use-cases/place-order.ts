@@ -4,7 +4,7 @@ import { OrderRepository } from "../../infra/repository/order-repository";
 import { inject } from "../../infra/utils/registry";
 import { Mediator } from "../../infra/utils/mediator";
 import { OrderPlacedEvent } from "../../domain/events/order-placed-event";
-import {  AccountGatewayHTTP } from "../../infra/gateway/account-gateway";
+import { AccountReferenceRepository } from "../../infra/repository/account-reference-repository";
 
 type Input = {
   accountId: string;
@@ -21,16 +21,16 @@ type Output = {
 export class PlaceOrder {
   @inject("walletRepository")
   private readonly walletRepository!: WalletRepository;
-  @inject("accountGateway")
-  private readonly accountGateway!: AccountGatewayHTTP;
+  @inject("accountReferenceRepository")
+  private readonly accountReferenceRepository!: AccountReferenceRepository;
   @inject("orderRepository")
   private readonly orderRepository!: OrderRepository;
   @inject("mediator")
   private readonly mediator!: Mediator;
 
   async execute(input: Input): Promise<Output> {
-    const account = await this.accountGateway.getById(input.accountId);
-    if (!account) throw new Error("Account not found");
+    const accountExists = await this.accountReferenceRepository.exist(input.accountId);
+    if (!accountExists) throw new Error("Account not found");
 
     const wallet = await this.walletRepository.getByAccountId(input.accountId);
 

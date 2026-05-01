@@ -1,6 +1,7 @@
 import { Deposit } from "../../src/application/use-cases/deposit";
 import { PGPromiseAdapter } from "../../src/infra/database/pg-promise-adapter";
 import { WalletRepositoryORM } from "../../src/infra/repository/wallet-repository";
+import { AccountReferenceRepository } from "../../src/infra/repository/account-reference-repository";
 import { GetOrder } from "../../src/application/use-cases/get-order";
 import { OrderRepositoryORM } from "../../src/infra/repository/order-repository";
 import { PlaceOrder } from "../../src/application/use-cases/place-order";
@@ -9,10 +10,9 @@ import { ORM } from "../../src/infra/orm/orm";
 import { Mediator } from "../../src/infra/utils/mediator";
 import { OrderPlacedEvent } from "../../src/domain/events/order-placed-event";
 import { ExecuteOrder } from "../../src/application/use-cases/execute-order";
-import { AccountGatewayHTTP } from "../../src/infra/gateway/account-gateway";
 
 let deposit: Deposit;
-let accountGateway: AccountGatewayHTTP;
+let accountReferenceRepository: jest.Mocked<Pick<AccountReferenceRepository, 'exist'>>;
 let getOrder: GetOrder;
 let placeOrder: PlaceOrder;
 let orderRepository: OrderRepositoryORM;
@@ -24,7 +24,11 @@ beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
   const executeOrder = new ExecuteOrder()
   const mediator = new Mediator();
-  accountGateway = new AccountGatewayHTTP();
+
+  accountReferenceRepository = {
+    exist: jest.fn() as jest.MockedFunction<(accountId: string) => Promise<boolean>>
+  }
+
   deposit = new Deposit();
   getOrder = new GetOrder();
   placeOrder = new PlaceOrder();
@@ -35,11 +39,11 @@ beforeEach(() => {
   Registry.getInstance().register("orm", new ORM());
   Registry.getInstance().register("mediator", mediator);
   Registry.getInstance().register("walletRepository", walletRepository);
+  Registry.getInstance().register("accountReferenceRepository", accountReferenceRepository);
   Registry.getInstance().register("orderRepository", orderRepository);
   Registry.getInstance().register("deposit", deposit);
   Registry.getInstance().register("getOrder", getOrder);
   Registry.getInstance().register("placeOrder", placeOrder);
-  Registry.getInstance().register("accountGateway", accountGateway);
 
   mediator.register(OrderPlacedEvent, async (event: OrderPlacedEvent) => {
     const order = event.getPayload();
@@ -56,19 +60,14 @@ afterEach(async () => {
   Registry.getInstance().dependencies.clear();
 });
 
-const accountInput = {
-  name: "John Doe",
-  email: "john.doe@example.com",
-  document: "85486231016",
-  password: "Password123"
-}
-
 describe("Place Order", () => {
   test("Deve criar uma order de compra em uma conta", async () => {
-    const accountOutput = await accountGateway.signup(accountInput);
+    accountReferenceRepository.exist.mockResolvedValue(true);
+
+    const accountId = crypto.randomUUID();
 
     const fundInput = {
-      accountId: accountOutput.accountId,
+      accountId: accountId,
       assetId: "USD",
       quantity: 1000000
     }
@@ -76,7 +75,7 @@ describe("Place Order", () => {
     await deposit.execute(fundInput);
 
     const inputOrder = {
-      accountId: accountOutput.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "buy",
       quantity: 1,
@@ -92,11 +91,37 @@ describe("Place Order", () => {
     expect(getOrderOutput.price).toBe(inputOrder.price)
   });
 
-  test("Não deve criar uma order de compra em uma conta se não tiver saldo", async () => {
-    const accountOutput = await accountGateway.signup(accountInput);
+    test("Não deve criar uma order de compra em uma conta que não existe", async () => {
+    accountReferenceRepository.exist.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+
+    const accountId = crypto.randomUUID();
 
     const fundInput = {
-      accountId: accountOutput.accountId,
+      accountId: accountId,
+      assetId: "USD",
+      quantity: 1000000
+    }
+
+    await deposit.execute(fundInput)
+
+    const inputOrder = {
+      accountId: accountId,
+      marketId: "BTC-USD",
+      side: "buy",
+      quantity: 1,
+      price: 78000
+    }
+
+    await expect( async() => await placeOrder.execute(inputOrder)).rejects.toThrow("Account not found");
+  });
+
+
+  test("Não deve criar uma order de compra em uma conta se não tiver saldo", async () => {
+    accountReferenceRepository.exist.mockResolvedValue(true);
+    const accountId = crypto.randomUUID();
+
+    const fundInput = {
+      accountId: accountId,
       assetId: "USD",
       quantity: 10000
     }
@@ -104,7 +129,7 @@ describe("Place Order", () => {
     await deposit.execute(fundInput);
 
     const inputOrder = {
-      accountId: accountOutput.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "buy",
       quantity: 1,
@@ -115,10 +140,11 @@ describe("Place Order", () => {
   });
 
   test("Não deve criar mais de uma order de compra em uma conta se não tiver saldo", async () => {
-    const accountOutput = await accountGateway.signup(accountInput);
+    accountReferenceRepository.exist.mockResolvedValue(true);
+    const accountId = crypto.randomUUID();
 
     const fundInput = {
-      accountId: accountOutput.accountId,
+      accountId: accountId,
       assetId: "USD",
       quantity: 5000
     }
@@ -126,7 +152,7 @@ describe("Place Order", () => {
     await deposit.execute(fundInput);
 
     const inputOrder = {
-      accountId: accountOutput.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "buy",
       quantity: 1,
@@ -140,16 +166,17 @@ describe("Place Order", () => {
   });
 
   test("Deve criar uma ordem de compra e uma ordem de venda em uma conta", async () => {
-    const outputSignup = await accountGateway.signup(accountInput);
+    accountReferenceRepository.exist.mockResolvedValue(true);
+    const accountId = crypto.randomUUID();
 
     const BTCdeposit = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       assetId: "BTC",
       quantity: 5
     };
 
     const USDdeposit = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       assetId: "USD",
       quantity: 10000
     };
@@ -158,7 +185,7 @@ describe("Place Order", () => {
     await deposit.execute(USDdeposit);
 
     const sellOrder = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "sell",
       quantity: 1,
@@ -166,7 +193,7 @@ describe("Place Order", () => {
     };
 
     const buyOrder = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "buy",
       quantity: 1,
@@ -184,17 +211,17 @@ describe("Place Order", () => {
   });
 
   test("Deve preencher parcialmente uma ordem de compra e uma ordem de venda", async () => {
-
-    const outputSignup = await accountGateway.signup(accountInput);
+    accountReferenceRepository.exist.mockResolvedValue(true);
+    const accountId = crypto.randomUUID();
 
     const BTCdeposit = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       assetId: "BTC",
       quantity: 5
     };
 
     const USDdeposit = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       assetId: "USD",
       quantity: 200000
     };
@@ -203,7 +230,7 @@ describe("Place Order", () => {
     await deposit.execute(USDdeposit);
 
     const sellOrder = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "sell",
       quantity: 4,
@@ -211,7 +238,7 @@ describe("Place Order", () => {
     };
 
     const buyOrder = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "buy",
       quantity: 3,
@@ -232,16 +259,17 @@ describe("Place Order", () => {
   });
 
   test("Deve fechar todas as ordens", async () => {
-    const outputSignup = await accountGateway.signup(accountInput);
+    accountReferenceRepository.exist.mockResolvedValue(true);
+    const accountId = crypto.randomUUID();
 
     const BTCdeposit = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       assetId: "BTC",
       quantity: 5
     };
 
     const USDdeposit = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       assetId: "USD",
       quantity: 200000
     };
@@ -250,7 +278,7 @@ describe("Place Order", () => {
     await deposit.execute(USDdeposit);
 
     const sellOrder = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "sell",
       quantity: 1,
@@ -258,7 +286,7 @@ describe("Place Order", () => {
     };
 
     const buyOrder = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "buy",
       quantity: 2,
@@ -279,16 +307,17 @@ describe("Place Order", () => {
   });
 
   test("Deve calcular corretamente o preço medio de compra", async () => {
-    const outputSignup = await accountGateway.signup(accountInput);
+    accountReferenceRepository.exist.mockResolvedValue(true);
+    const accountId = crypto.randomUUID();
 
     const BTCdeposit = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       assetId: "BTC",
       quantity: 5
     };
 
     const USDdeposit = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       assetId: "USD",
       quantity: 200000
     };
@@ -297,7 +326,7 @@ describe("Place Order", () => {
     await deposit.execute(USDdeposit);
 
     const sellOrder1 = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "sell",
       quantity: 1,
@@ -305,7 +334,7 @@ describe("Place Order", () => {
     };
 
     const sellOrder2 = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "sell",
       quantity: 1,
@@ -313,7 +342,7 @@ describe("Place Order", () => {
     };
 
     const buyOrder = {
-      accountId: outputSignup.accountId,
+      accountId: accountId,
       marketId: "BTC-USD",
       side: "buy",
       quantity: 2,
