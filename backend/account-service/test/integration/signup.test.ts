@@ -20,12 +20,12 @@ let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
+  signUp = new SignUp();
+
   Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
   Registry.getInstance().register("orm", new ORM());
   Registry.getInstance().register("accountRepository", new AccountRepositoryORM());
-  Registry.getInstance().register("signUp", new SignUp());
-
-  signUp = new SignUp();
+  Registry.getInstance().register("signUp", signUp);
 });
 
 afterEach(async () => {
