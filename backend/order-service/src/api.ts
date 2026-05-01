@@ -19,6 +19,11 @@ import { AccountGatewayHTTP } from "./infra/gateway/account-gateway";
 import { MatchEngineGatewayHTTP } from "./infra/gateway/match-engine-gateway";
 import { RabbitMQAdapter } from "./infra/queue/rabbitmq-adapter";
 
+import { PaymentAGatewayHTTP } from "./infra/gateway/payment-A-gateway";
+import { PaymentBGatewayHTTP } from "./infra/gateway/payment-B-gateway";
+import { PaymentCGatewayHTTP } from "./infra/gateway/payment-C-gateway";
+import { PaymentDGatewayHTTP } from "./infra/gateway/payment-D-gateway";
+
 const PORT = 4157;
 
 async function main() {
@@ -44,6 +49,11 @@ async function main() {
   Registry.getInstance().register("accountGateway", new AccountGatewayHTTP());
   Registry.getInstance().register("matchEngineGateway", new MatchEngineGatewayHTTP());
   Registry.getInstance().register("orderRepository", new OrderRepositoryORM());
+
+  Registry.getInstance().register("paymentAGateway", new PaymentAGatewayHTTP());
+  Registry.getInstance().register("paymentBGateway", new PaymentBGatewayHTTP());
+  Registry.getInstance().register("paymentCGateway", new PaymentCGatewayHTTP());
+  Registry.getInstance().register("paymentDGateway", new PaymentDGatewayHTTP());
 
   Registry.getInstance().register("deposit", new Deposit());
   Registry.getInstance().register("withdraw", new Withdraw());
