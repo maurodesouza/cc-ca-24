@@ -7,9 +7,7 @@ import { OrderRepositoryORM } from "../../src/infra/repository/order-repository"
 import { PlaceOrder } from "../../src/application/use-cases/place-order";
 import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
-import { Mediator } from "../../src/infra/utils/mediator";
-import { OrderPlacedEvent } from "../../src/domain/events/order-placed-event";
-import { ExecuteOrder } from "../../src/application/use-cases/execute-order";
+import { Queue } from "../../src/application/queue/queue";
 
 let deposit: Deposit;
 let queueMock: Partial<Queue>
@@ -23,8 +21,6 @@ let pgPromiseAdapter: PGPromiseAdapter;
 
 beforeEach(() => {
   pgPromiseAdapter = new PGPromiseAdapter();
-  const executeOrder = new ExecuteOrder()
-  const mediator = new Mediator();
 
   accountReferenceRepository = {
     exist: jest.fn() as jest.MockedFunction<(accountId: string) => Promise<boolean>>
@@ -42,7 +38,6 @@ beforeEach(() => {
 
   Registry.getInstance().register("databaseConnection", pgPromiseAdapter);
   Registry.getInstance().register("orm", new ORM());
-  Registry.getInstance().register("mediator", mediator);
   Registry.getInstance().register("walletRepository", walletRepository);
   Registry.getInstance().register("accountReferenceRepository", accountReferenceRepository);
   Registry.getInstance().register("queue", queueMock);
@@ -50,13 +45,6 @@ beforeEach(() => {
   Registry.getInstance().register("deposit", deposit);
   Registry.getInstance().register("getOrder", getOrder);
   Registry.getInstance().register("placeOrder", placeOrder);
-
-  mediator.register(OrderPlacedEvent, async (event: OrderPlacedEvent) => {
-    const order = event.getPayload();
-
-    await executeOrder.execute(order.getMarketId());
-  });
-
 });
 
 afterEach(async () => {
@@ -105,7 +93,7 @@ describe("Place Order", () => {
     }), { routingKey: "order.placed" });
   });
 
-    test("Não deve criar uma order de compra em uma conta que não existe", async () => {
+  test("Não deve criar uma order de compra em uma conta que não existe", async () => {
     accountReferenceRepository.exist.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
 
     const accountId = crypto.randomUUID();
