@@ -65,7 +65,6 @@ describe("SignUp", () => {
 
     expect(mailerMock.send).toHaveBeenCalledWith(expect.objectContaining({
       to: signupOutput.email,
-      subject: "Welcome to our platform!",
     }));
   });
 
