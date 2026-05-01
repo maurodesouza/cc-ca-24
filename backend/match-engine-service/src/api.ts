@@ -5,7 +5,6 @@ import { ExpressAdapter } from "./infra/http/express-adapter";
 
 import { Registry } from "./infra/di/registry";
 import { Mediator } from "./infra/mediator/mediator";
-import { OrderGatewayHTTP } from "./infra/gateway/order-gateway";
 import { Book } from "./domain/book";
 import { RabbitMQAdapter } from "./infra/queue/rabbitmq-adapter";
 import { InitHTTPInterfaces } from "./interface/http";
@@ -33,10 +32,8 @@ async function main() {
     type: "topic"
   });
 
-
   Registry.getInstance().register("httpServer", httpServer);
   Registry.getInstance().register("mediator", new Mediator());
-  Registry.getInstance().register("orderGateway", new OrderGatewayHTTP());
   Registry.getInstance().register("queue", queue);
 
   Registry.getInstance().register("book", new Book("BTC-USD"));
