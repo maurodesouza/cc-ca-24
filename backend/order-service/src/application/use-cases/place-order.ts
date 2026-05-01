@@ -2,9 +2,8 @@ import { Order } from "../../domain/order";
 import { WalletRepository } from "../../infra/repository/wallet-repository";
 import { OrderRepository } from "../../infra/repository/order-repository";
 import { inject } from "../../infra/utils/registry";
-import { Mediator } from "../../infra/utils/mediator";
-import { OrderPlacedEvent } from "../../domain/events/order-placed-event";
 import { AccountReferenceRepository } from "../../infra/repository/account-reference-repository";
+import { RabbitMQAdapter } from "../../infra/queue/rabbitmq-adapter";
 
 type Input = {
   accountId: string;
@@ -25,8 +24,8 @@ export class PlaceOrder {
   private readonly accountReferenceRepository!: AccountReferenceRepository;
   @inject("orderRepository")
   private readonly orderRepository!: OrderRepository;
-  @inject("mediator")
-  private readonly mediator!: Mediator;
+  @inject("queue")
+  private readonly queue!: RabbitMQAdapter;
 
   async execute(input: Input): Promise<Output> {
     const accountExists = await this.accountReferenceRepository.exist(input.accountId);
@@ -47,7 +46,21 @@ export class PlaceOrder {
 
     await this.orderRepository.save(order);
     await this.walletRepository.update(wallet);
-    await this.mediator.notifyAll(new OrderPlacedEvent(order));
+
+    const payload = {
+        orderId: order.getOrderId(),
+        accountId: order.getAccountId(),
+        marketId: order.getMarketId(),
+        side: order.getSide(),
+        quantity: order.getQuantity(),
+        price: order.getPrice(),
+        fillQuantity: order.getFillQuantity(),
+        fillPrice: order.getFillPrice(),
+        status: order.getStatus(),
+        timestamp: order.getTimestamp(),
+      };
+
+    await this.queue.publish("order.events", payload, { routingKey: "order.placed" })
 
     return {
       orderId: order.getOrderId(),
