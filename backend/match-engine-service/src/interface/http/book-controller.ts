@@ -1,6 +1,6 @@
 import { Book } from "../../domain/book";
 import { Order } from "../../domain/order";
-import { inject } from "../../infra/di/registry";
+import { inject } from "../../infra/utils/registry";
 import { HTTPServer } from "../../application/http/http-server";
 
 export class BookController {

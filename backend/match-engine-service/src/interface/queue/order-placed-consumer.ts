@@ -1,6 +1,6 @@
 import { Book } from "../../domain/book";
 import { Order } from "../../domain/order";
-import { inject } from "../../infra/di/registry";
+import { inject } from "../../infra/utils/registry";
 import { RabbitMQAdapter } from "../../infra/queue/rabbitmq-adapter";
 
 export class OrderPlacedConsumer {

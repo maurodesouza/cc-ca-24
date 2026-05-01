@@ -3,8 +3,8 @@ import cors from "cors";
 
 import { ExpressAdapter } from "./infra/http/express-adapter";
 
-import { Registry } from "./infra/di/registry";
-import { Mediator } from "./infra/mediator/mediator";
+import { Registry } from "./infra/utils/registry";
+import { Mediator } from "./infra/utils/mediator";
 import { Book } from "./domain/book";
 import { RabbitMQAdapter } from "./infra/queue/rabbitmq-adapter";
 import { InitHTTPInterfaces } from "./interface/http";

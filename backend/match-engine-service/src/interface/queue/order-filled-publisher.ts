@@ -1,5 +1,5 @@
 import { Book } from "../../domain/book";
-import { inject } from "../../infra/di/registry";
+import { inject } from "../../infra/utils/registry";
 import { RabbitMQAdapter } from "../../infra/queue/rabbitmq-adapter";
 import { OrderFilledEvent } from "../../domain/events/order-filled-event";
 

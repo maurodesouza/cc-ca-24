@@ -1,4 +1,4 @@
-import { Mediator } from "../infra/mediator/mediator";
+import { Mediator } from "../infra/utils/mediator";
 import { OrderFilledEvent } from "./events/order-filled-event";
 import { Order } from "./order";
 
