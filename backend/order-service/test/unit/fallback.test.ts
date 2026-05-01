@@ -1,6 +1,6 @@
 import { Fallback } from "../../src/infra/utils/fallback";
 import { Retry } from "../../src/infra/utils/retry";
-import * as sleepModule from "../../src/utils/sleep";
+import * as sleepModule from "../../src/infra/utils/sleep";
 
 describe("Retry", () => {
   test("Deve realizar o fallback quando houver falha", async () => {

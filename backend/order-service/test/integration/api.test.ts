@@ -4,7 +4,7 @@ import { WalletRepositoryORM } from "../../src/infra/repository/wallet-repositor
 import { OrderRepositoryORM } from "../../src/infra/repository/order-repository";
 import { Registry } from "../../src/infra/utils/registry";
 import { ORM } from "../../src/infra/orm/orm";
-import { sleep } from "../../src/utils/sleep";
+import { sleep } from "../../src/infra/utils/sleep";
 
 axios.defaults.validateStatus = () => true;
 

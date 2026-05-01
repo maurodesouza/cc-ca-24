@@ -1,4 +1,4 @@
-import { sleep } from "../../utils/sleep";
+import { sleep } from "./sleep";
 
 export class Retry {
   static async execute<T>(fn: Function, retries = 3, delay = 1000, exponentialIncrement = 1): Promise<T> {

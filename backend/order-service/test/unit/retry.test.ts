@@ -1,5 +1,5 @@
 import { Retry } from "../../src/infra/utils/retry";
-import * as sleepModule from "../../src/utils/sleep";
+import * as sleepModule from "../../src/infra/utils/sleep";
 
 describe("Retry", () => {
   beforeEach(() => {
