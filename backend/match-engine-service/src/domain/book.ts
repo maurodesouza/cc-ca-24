@@ -30,7 +30,7 @@ export class Book extends Mediator {
        if (!highestBid || !lowestAsk || highestBid.getPrice() < lowestAsk.getPrice()) break;
 
        const fillQuantity = Math.min(highestBid.getAvailableQuantity(), lowestAsk.getAvailableQuantity());
-       const fillPrice = (highestBid.getTimestamp() < lowestAsk.getTimestamp()) ? highestBid.getPrice() : lowestAsk.getPrice();
+       const fillPrice = lowestAsk.getPrice();
 
        highestBid.fill(fillQuantity, fillPrice);
        lowestAsk.fill(fillQuantity, fillPrice);
