@@ -13,7 +13,14 @@ export class AccountController {
 
   constructor() {
     this.httpServer.route("post", "/signup", async (body: any) => {
-      const output = await this.signUp.execute(body);
+      const input = {
+        name: body.name,
+        email: body.email,
+        document: body.document,
+        password: body.password
+      }
+
+      const output = await this.signUp.execute(input);
       return output;
     });
 
