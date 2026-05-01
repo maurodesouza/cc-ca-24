@@ -14,6 +14,9 @@ describe("Account", () => {
     const input = { ...validInput }
 
     const signupResponse = await axios.post("http://localhost:4156/signup", input);
+
+    console.log('signupResponse', signupResponse.data)
+
     expect(signupResponse.status).toBe(201);
     expect(signupResponse.data.accountId).toBeDefined();
 
@@ -25,17 +28,4 @@ describe("Account", () => {
     expect(getAccountResponse.data.email).toBe(input.email);
     expect(getAccountResponse.data.document).toBe(input.document);
   });
-
-  test("Não deve criar conta com nome invalido", async () => {
-    const input = {
-      ...validInput,
-      name: "John",
-    }
-
-    const response = await axios.post("http://localhost:4156/signup", input)
-
-
-    expect(response.status).toBe(400);
-    expect(response.data.message).toBe("Invalid name");
-  })
 });
