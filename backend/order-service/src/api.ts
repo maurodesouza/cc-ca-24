@@ -8,10 +8,9 @@ import { GetOrder } from "./application/use-cases/get-order";
 import { UpdateOrder } from "./application/use-cases/update-order";
 import { PlaceOrder } from "./application/use-cases/place-order";
 
-// Infrastructure - Controllers
-import { OrderController } from "./infra/controllers/order-controller";
-import { BalanceController } from "./infra/controllers/balance-controller";
-import { AccountController } from "./infra/controllers/account-controller";
+// Controllers
+import { InitHTTPInterfaces } from "./interfaces/http";
+import { InitQueueConsumer } from "./interfaces/queue";
 
 // Infrastructure - Repositories
 import { WalletRepositoryORM } from "./infra/repository/wallet-repository";
@@ -39,6 +38,7 @@ import { Registry } from "./infra/utils/registry";
 import { Mediator } from "./infra/utils/mediator";
 import { ORM } from "./infra/orm/orm";
 
+
 const PORT = 4157;
 
 async function main() {
@@ -50,8 +50,16 @@ async function main() {
   const queue = new RabbitMQAdapter();
 
   await queue.connect();
-  await queue.setup("order-placed", "order-placed.insert-order-to-book");
-  await queue.setup("order-filled", "order-filled.update-order");
+
+  await queue.setup("order.events", "matching-engine.order.placed", {
+    routingKey: "order.placed",
+    type: "topic"
+  });
+
+  await queue.setup("matching-engine.events", "order.matching-engine.order-filled", {
+    routingKey: "matching-engine.order-filled",
+    type: "topic"
+  });
 
   Registry.getInstance().register("httpServer", httpServer);
   Registry.getInstance().register("orm", new ORM());
@@ -76,9 +84,8 @@ async function main() {
   Registry.getInstance().register("updateOrder", new UpdateOrder());
   Registry.getInstance().register("placeOrder", new PlaceOrder());
 
-  new BalanceController();
-  new OrderController();
-  new AccountController()
+  new InitHTTPInterfaces()
+  new InitQueueConsumer()
 
   httpServer.listen(PORT);
 }
