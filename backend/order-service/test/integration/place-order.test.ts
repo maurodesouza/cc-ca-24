@@ -12,6 +12,7 @@ import { OrderPlacedEvent } from "../../src/domain/events/order-placed-event";
 import { ExecuteOrder } from "../../src/application/use-cases/execute-order";
 
 let deposit: Deposit;
+let queueMock: Partial<Queue>
 let accountReferenceRepository: jest.Mocked<Pick<AccountReferenceRepository, 'exist'>>;
 let getOrder: GetOrder;
 let placeOrder: PlaceOrder;
@@ -29,6 +30,10 @@ beforeEach(() => {
     exist: jest.fn() as jest.MockedFunction<(accountId: string) => Promise<boolean>>
   }
 
+  queueMock = {
+    publish: jest.fn().mockResolvedValue(undefined)
+  }
+
   deposit = new Deposit();
   getOrder = new GetOrder();
   placeOrder = new PlaceOrder();
@@ -40,6 +45,7 @@ beforeEach(() => {
   Registry.getInstance().register("mediator", mediator);
   Registry.getInstance().register("walletRepository", walletRepository);
   Registry.getInstance().register("accountReferenceRepository", accountReferenceRepository);
+  Registry.getInstance().register("queue", queueMock);
   Registry.getInstance().register("orderRepository", orderRepository);
   Registry.getInstance().register("deposit", deposit);
   Registry.getInstance().register("getOrder", getOrder);
@@ -89,6 +95,14 @@ describe("Place Order", () => {
 
     expect(getOrderOutput.quantity).toBe(inputOrder.quantity)
     expect(getOrderOutput.price).toBe(inputOrder.price)
+
+    expect(queueMock.publish).toHaveBeenCalledWith("order.events", expect.objectContaining({
+      orderId: getOrderOutput.orderId,
+      marketId: getOrderOutput.marketId,
+      side: getOrderOutput.side,
+      quantity: getOrderOutput.quantity,
+      price: getOrderOutput.price,
+    }), { routingKey: "order.placed" });
   });
 
     test("Não deve criar uma order de compra em uma conta que não existe", async () => {
