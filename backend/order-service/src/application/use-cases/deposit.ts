@@ -1,4 +1,4 @@
-import { inject } from "../../infra/di/registry";
+import { inject } from "../../infra/utils/registry";
 import { WalletRepository } from "../../infra/repository/wallet-repository";
 import { AccountGateway } from "../../infra/gateway/account-gateway";
 
