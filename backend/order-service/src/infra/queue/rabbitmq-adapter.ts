@@ -1,5 +1,5 @@
 import amqp from "amqplib";
-import { Queue, QueueSetupConfig } from "../../application/queue/queue";
+import { PublishSetupConfig, Queue, QueueSetupConfig } from "../../application/queue/queue";
 
 const DEFAULT_SETUP_CONFIG: QueueSetupConfig = {
   type: "direct",
@@ -21,8 +21,8 @@ export class RabbitMQAdapter implements Queue {
     this.channel.bindQueue(queue, exchange, config.routingKey);
   }
 
-  async publish(exchange: string, message: any): Promise<void> {
-    this.channel.publish(exchange, "", Buffer.from(JSON.stringify(message)));
+  async publish(exchange: string, message: any, config?: PublishSetupConfig): Promise<void> {
+    this.channel.publish(exchange, config?.routingKey || "", Buffer.from(JSON.stringify(message)));
   }
 
   async consume(queue: string, callback: Function): Promise<void> {
