@@ -2,19 +2,19 @@ import { model, Schema } from 'mongoose';
 
 
 const Balance = new Schema({
-  asset_id: {
-    type: Number,
+  assetId: {
+    type: String,
     required: true,
   },
   quantity: {
-    type: String,
+    type: Number,
     required: true,
   },
-  blocked_quantity: {
-    type: String,
+  blockedQuantity: {
+    type: Number,
     required: true,
   },
-})
+}, { _id: false })
 
 const AccountWithBalanceSchema = new Schema(
   {

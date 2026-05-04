@@ -1,9 +1,9 @@
 import AccountWithBalance from "../models/account-with-balance";
 
 export type BalanceDTO = {
-  asset_id: number;
-  quantity: string;
-  blocked_quantity: string;
+  assetId: string;
+  quantity: number;
+  blockedQuantity: number;
 };
 
 export type AccountWithBalanceDTO = {
@@ -39,7 +39,7 @@ export class AccountWithBalanceRepositoryMongo implements AccountWithBalanceRepo
       accountId: account.accountId,
       name: account.name,
       email: account.email,
-      balance: account.balance,
+      balance: account.balance
     };
   }
 }
