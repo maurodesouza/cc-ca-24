@@ -38,8 +38,8 @@ export class Book extends Mediator {
        if (highestBid.isClosed()) this.buys.splice(0, 1);
        if (lowestAsk.isClosed()) this.sells.splice(0, 1);
 
-       await this.notifyAll(new OrderFilledEvent(highestBid));
-       await this.notifyAll(new OrderFilledEvent(lowestAsk));
+       await this.notifyAll(new OrderFilledEvent(highestBid, fillQuantity));
+       await this.notifyAll(new OrderFilledEvent(lowestAsk, fillQuantity));
      }
   }
 }

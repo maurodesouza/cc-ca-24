@@ -2,7 +2,6 @@ import { Book } from "../../domain/book";
 import { inject } from "../../infra/utils/registry";
 import { Queue } from "../../application/queue/queue";
 import { OrderFilledEvent } from "../../domain/events/order-filled-event";
-import { OrderEventMapper } from "../../application/mappers/order-event-mapper";
 
 export class OrderFilledPublisher {
   @inject("book")
@@ -15,8 +14,7 @@ export class OrderFilledPublisher {
   }
 
   async handle(event: OrderFilledEvent) {
-    const order = event.getPayload()
-    const payload = OrderEventMapper.toPayload(order)
+    const payload = event.getPayload()
 
     await this.queue.publish("matching-engine.events", payload, { routingKey: "matching-engine.order-filled" });
   }
