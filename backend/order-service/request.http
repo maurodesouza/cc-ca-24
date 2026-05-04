@@ -1,0 +1,20 @@
+POST http://localhost:4157/deposit HTTP/1.1
+content-type: application/json
+
+{
+  "accountId": "d2d8cf0d-238b-4c04-a5ca-b850b8fb10e9",
+  "assetId": "BTC",
+  "quantity": 43000
+}
+
+###
+
+POST http://localhost:4157/withdraw HTTP/1.1
+content-type: application/json
+
+{
+  "accountId": "d2d8cf0d-238b-4c04-a5ca-b850b8fb10e9",
+  "assetId": "BTC",
+  "quantity": 115000
+}
+
