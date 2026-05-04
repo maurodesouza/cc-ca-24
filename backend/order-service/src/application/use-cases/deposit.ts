@@ -18,8 +18,6 @@ export class Deposit {
   private readonly queue!: Queue;
 
   async execute(input: Input): Promise<void> {
-    console.log('??????')
-
     const accountExists = await this.accountReferenceRepository.exist(input.accountId);
     if (!accountExists) throw new Error("Account not found");
 
@@ -28,8 +26,6 @@ export class Deposit {
 
     await this.walletRepository.update(wallet);
     const eventPayload = WalletEventMapper.toPayload(wallet);
-
-    console.log('??????', eventPayload)
 
     await this.queue.publish("balance.events", eventPayload, { routingKey: "balance.updated" });
   }
