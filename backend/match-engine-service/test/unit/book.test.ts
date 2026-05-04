@@ -253,5 +253,73 @@ describe("Book", () => {
 
       notifyAllSpy.mockRestore();
     });
+
+    test("Deve fazer match corretamente quando multiplas orders", async () => {
+      const sellOrder1 = Order.create(accountId, "BTC-USD", "sell", 10, 10);
+      const sellOrder2 = Order.create(accountId, "BTC-USD", "sell", 10, 20);
+      const sellOrder3 = Order.create(accountId, "BTC-USD", "sell", 10, 30);
+      const sellOrder4 = Order.create(accountId, "BTC-USD", "sell", 10, 40);
+      const sellOrder5 = Order.create(accountId, "BTC-USD", "sell", 10, 50);
+      const buyOrder1 = Order.create(accountId, "BTC-USD", "buy", 30, 60);
+
+      await book.insert(sellOrder1);
+      await book.insert(sellOrder2);
+      await book.insert(sellOrder3);
+      await book.insert(sellOrder4);
+      await book.insert(sellOrder5);
+      await book.insert(buyOrder1);
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(sellOrder1.getFillQuantity()).toBe(10);
+      expect(sellOrder2.getFillQuantity()).toBe(10);
+      expect(sellOrder3.getFillQuantity()).toBe(10);
+      expect(sellOrder4.getFillQuantity()).toBe(0);
+      expect(sellOrder5.getFillQuantity()).toBe(0);
+
+      expect(sellOrder1.getStatus()).toBe("closed");
+      expect(sellOrder2.getStatus()).toBe("closed");
+      expect(sellOrder3.getStatus()).toBe("closed");
+      expect(sellOrder4.getStatus()).toBe("open");
+      expect(sellOrder5.getStatus()).toBe("open");
+      expect(buyOrder1.getStatus()).toBe("closed");
+
+      expect(book.sells).toHaveLength(2);
+      expect(book.buys).toHaveLength(0);
+    });
+
+    test.only("Deve fazer match corretamente quando multiplas orders 2", async () => {
+      const buyOrder1 = Order.create(accountId, "BTC-USD", "buy", 10, 10);
+      const buyOrder2 = Order.create(accountId, "BTC-USD", "buy", 10, 20);
+      const buyOrder3 = Order.create(accountId, "BTC-USD", "buy", 10, 30);
+      const buyOrder4 = Order.create(accountId, "BTC-USD", "buy", 10, 40);
+      const buyOrder5 = Order.create(accountId, "BTC-USD", "buy", 10, 50);
+      const sellOrder1 = Order.create(accountId, "BTC-USD", "sell", 30, 30);
+
+      await book.insert(buyOrder1);
+      await book.insert(buyOrder2);
+      await book.insert(buyOrder3);
+      await book.insert(buyOrder4);
+      await book.insert(buyOrder5);
+      await book.insert(sellOrder1);
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(buyOrder1.getFillQuantity()).toBe(0);
+      expect(buyOrder2.getFillQuantity()).toBe(0);
+      expect(buyOrder3.getFillQuantity()).toBe(10);
+      expect(buyOrder4.getFillQuantity()).toBe(10);
+      expect(buyOrder5.getFillQuantity()).toBe(10);
+
+      expect(buyOrder1.getStatus()).toBe("open");
+      expect(buyOrder2.getStatus()).toBe("open");
+      expect(buyOrder3.getStatus()).toBe("closed");
+      expect(buyOrder4.getStatus()).toBe("closed");
+      expect(buyOrder5.getStatus()).toBe("closed");
+      expect(sellOrder1.getStatus()).toBe("closed");
+
+      expect(book.sells).toHaveLength(0);
+      expect(book.buys).toHaveLength(2);
+    });
   });
 });
