@@ -1,0 +1,2 @@
+GET http://localhost:4159/accounts/160c35a3-6075-4f24-8ef8-7025ed3433f4 HTTP/1.1
+content-type: application/json
