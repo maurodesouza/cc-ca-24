@@ -9,6 +9,7 @@ import { MongooseAdapter } from "./infra/database/mongoose-adapter";
 import { AccountWithBalanceRepositoryMongo } from "./infra/repository/account-with-balance";
 import { InitHTTPInterfaces } from "./interfaces/http";
 import { InitQueueConsumers } from "./interfaces/queue";
+import { DepthRepositoryMongo } from "./infra/repository/depth-repository";
 
 const PORT = 4159;
 
@@ -30,6 +31,8 @@ async function main() {
     queue.setup("account.events", "order.account.created", { routingKey: "account.created", type: "topic" }),
     queue.setup("account.events", "projection.account.created", { routingKey: "account.created", type: "topic" }),
     queue.setup("balance.events", "projection.balance.updated", { routingKey: "balance.updated", type: "topic" }),
+    queue.setup("order.events", "projection.order.placed", { routingKey: "order.placed", type: "topic" }),
+    queue.setup("matching-engine.events", "projection.matching-engine.order-filled", { routingKey: "matching-engine.order-filled", type: "topic" }),
   ]);
 
   Registry.getInstance().register("http-server", httpServer);
@@ -37,6 +40,7 @@ async function main() {
   Registry.getInstance().register("queue", queue);
 
   Registry.getInstance().register("account-with-balance-repository", new AccountWithBalanceRepositoryMongo());
+  Registry.getInstance().register("depth-repository", new DepthRepositoryMongo());
 
   new InitHTTPInterfaces()
   new InitQueueConsumers()

@@ -49,20 +49,12 @@ async function main() {
 
   await queue.connect();
 
-  await queue.setup("balance.events", "projection.balance.updated", {
-    routingKey: "balance.updated",
-    type: "topic"
-  });
-
-  await queue.setup("order.events", "matching-engine.order.placed", {
-    routingKey: "order.placed",
-    type: "topic"
-  });
-
-  await queue.setup("matching-engine.events", "order.matching-engine.order-filled", {
-    routingKey: "matching-engine.order-filled",
-    type: "topic"
-  });
+  await Promise.all([
+    queue.setup("balance.events", "projection.balance.updated", { routingKey: "balance.updated", type: "topic" }),
+    queue.setup("order.events", "projection.order.placed", { routingKey: "order.placed", type: "topic" }),
+    queue.setup("order.events", "matching-engine.order.placed", { routingKey: "order.placed", type: "topic" }),
+    queue.setup("matching-engine.events", "order.matching-engine.order-filled", { routingKey: "matching-engine.order-filled", type: "topic" }),
+  ])
 
   Registry.getInstance().register("orm", new ORM());
   Registry.getInstance().register("queue", queue);

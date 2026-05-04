@@ -22,15 +22,11 @@ async function main() {
 
   await queue.connect();
 
-  await queue.setup("order.events", "matching-engine.order.placed", {
-    routingKey: "order.placed",
-    type: "topic"
-  });
-
-  await queue.setup("matching-engine.events", "order.matching-engine.order-filled", {
-    routingKey: "matching-engine.order-filled",
-    type: "topic"
-  });
+  await Promise.all([
+    queue.setup("order.events", "matching-engine.order.placed", { routingKey: "order.placed", type: "topic" }),
+    queue.setup("matching-engine.events", "order.matching-engine.order-filled", { routingKey: "matching-engine.order-filled", type: "topic" }),
+    queue.setup("matching-engine.events", "projection.matching-engine.order-filled", { routingKey: "matching-engine.order-filled", type: "topic" }),
+  ]);
 
   Registry.getInstance().register("httpServer", httpServer);
   Registry.getInstance().register("mediator", new Mediator());
