@@ -1,6 +1,8 @@
 import { inject } from "../../infra/utils/registry";
 import { WalletRepository } from "../../infra/repository/wallet-repository";
 import { AccountReferenceRepository } from "../../infra/repository/account-reference-repository";
+import { WalletEventMapper } from "../mappers/wallet-event-mapper";
+import { Queue } from "../queue/queue";
 
 type Input = {
   accountId: string;
@@ -12,8 +14,12 @@ export class Deposit {
   private readonly walletRepository!: WalletRepository;
   @inject("accountReferenceRepository")
   private readonly accountReferenceRepository!: AccountReferenceRepository;
+  @inject("queue")
+  private readonly queue!: Queue;
 
   async execute(input: Input): Promise<void> {
+    console.log('??????')
+
     const accountExists = await this.accountReferenceRepository.exist(input.accountId);
     if (!accountExists) throw new Error("Account not found");
 
@@ -21,5 +27,10 @@ export class Deposit {
     wallet.deposit(input.assetId, input.quantity);
 
     await this.walletRepository.update(wallet);
+    const eventPayload = WalletEventMapper.toPayload(wallet);
+
+    console.log('??????', eventPayload)
+
+    await this.queue.publish("balance.events", eventPayload, { routingKey: "balance.updated" });
   }
 }

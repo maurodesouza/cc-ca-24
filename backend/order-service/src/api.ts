@@ -37,7 +37,6 @@ import { RabbitMQAdapter } from "./infra/queue/rabbitmq-adapter";
 import { Registry } from "./infra/utils/registry";
 import { ORM } from "./infra/orm/orm";
 
-
 const PORT = 4157;
 
 async function main() {
@@ -49,6 +48,11 @@ async function main() {
   const queue = new RabbitMQAdapter();
 
   await queue.connect();
+
+  await queue.setup("balance.events", "projection.balance.updated", {
+    routingKey: "balance.updated",
+    type: "topic"
+  });
 
   await queue.setup("order.events", "matching-engine.order.placed", {
     routingKey: "order.placed",

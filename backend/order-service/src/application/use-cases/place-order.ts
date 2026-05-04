@@ -3,7 +3,9 @@ import { WalletRepository } from "../../infra/repository/wallet-repository";
 import { OrderRepository } from "../../infra/repository/order-repository";
 import { inject } from "../../infra/utils/registry";
 import { AccountReferenceRepository } from "../../infra/repository/account-reference-repository";
-import { RabbitMQAdapter } from "../../infra/queue/rabbitmq-adapter";
+import { WalletEventMapper } from "../mappers/wallet-event-mapper";
+import { Queue } from "../queue/queue";
+import { OrderEventMapper } from "../mappers/order-event-mapper";
 
 type Input = {
   accountId: string;
@@ -25,7 +27,7 @@ export class PlaceOrder {
   @inject("orderRepository")
   private readonly orderRepository!: OrderRepository;
   @inject("queue")
-  private readonly queue!: RabbitMQAdapter;
+  private readonly queue!: Queue;
 
   async execute(input: Input): Promise<Output> {
     const accountExists = await this.accountReferenceRepository.exist(input.accountId);
@@ -44,23 +46,15 @@ export class PlaceOrder {
     const blocked = wallet.blockOrder(order);
     if (!blocked) throw new Error("Insufficient funds");
 
-    await this.orderRepository.save(order);
-    await this.walletRepository.update(wallet);
+    await Promise.all([
+      this.orderRepository.save(order),
+      this.walletRepository.update(wallet),
+    ]);
 
-    const payload = {
-        orderId: order.getOrderId(),
-        accountId: order.getAccountId(),
-        marketId: order.getMarketId(),
-        side: order.getSide(),
-        quantity: order.getQuantity(),
-        price: order.getPrice(),
-        fillQuantity: order.getFillQuantity(),
-        fillPrice: order.getFillPrice(),
-        status: order.getStatus(),
-        timestamp: order.getTimestamp(),
-      };
-
-    await this.queue.publish("order.events", payload, { routingKey: "order.placed" })
+    await Promise.all([
+      this.queue.publish("order.events", OrderEventMapper.toPayload(order), { routingKey: "order.placed" }),
+      this.queue.publish("balance.events", WalletEventMapper.toPayload(wallet), { routingKey: "balance.updated" }),
+    ]);
 
     return {
       orderId: order.getOrderId(),
