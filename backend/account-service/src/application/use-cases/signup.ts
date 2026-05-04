@@ -1,7 +1,7 @@
 import { AccountRepository } from "../../infra/repository/account-repository";
 import { Account } from "../../domain/account";
 import { inject } from "../../infra/utils/registry";
-import { RabbitMQAdapter } from "../../infra/queue/rabbitmq-adapter";
+import { Queue } from "../../application/queue/queue";
 import { ResendAdapter } from "../../infra/mail/resend-adapter";
 
 type Input = {
@@ -23,7 +23,7 @@ export class SignUp {
   @inject("accountRepository")
   private readonly accountRepository!: AccountRepository;
   @inject("queue")
-  private readonly queue!: RabbitMQAdapter;
+  private readonly queue!: Queue;
   @inject("mailer")
   private readonly mailer!: ResendAdapter;
 

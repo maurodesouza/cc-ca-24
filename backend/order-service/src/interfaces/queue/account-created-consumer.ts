@@ -1,10 +1,10 @@
-import { RabbitMQAdapter } from "../../infra/queue/rabbitmq-adapter";
+import { Queue } from "../../application/queue/queue";
 import { AccountReferenceRepository } from "../../infra/repository/account-reference-repository";
 import { inject } from "../../infra/utils/registry";
 
 export class AccountCreatedConsumer {
   @inject("queue")
-  private readonly queue!: RabbitMQAdapter;
+  private readonly queue!: Queue;
   @inject("accountReferenceRepository")
   private readonly accountReferenceRepository!: AccountReferenceRepository;
 

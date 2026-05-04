@@ -1,10 +1,10 @@
 import { UpdateOrder } from "../../application/use-cases/update-order";
-import { RabbitMQAdapter } from "../../infra/queue/rabbitmq-adapter";
+import { Queue } from "../../application/queue/queue";
 import { inject } from "../../infra/utils/registry";
 
 export class MatchingEngineOrderFilledConsumer {
   @inject("queue")
-  private readonly queue!: RabbitMQAdapter;
+  private readonly queue!: Queue;
   @inject("updateOrder")
   private readonly updateOrder!: UpdateOrder;
 

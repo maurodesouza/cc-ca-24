@@ -1,13 +1,13 @@
 import { Book } from "../../domain/book";
 import { inject } from "../../infra/utils/registry";
-import { RabbitMQAdapter } from "../../infra/queue/rabbitmq-adapter";
+import { Queue } from "../../application/queue/queue";
 import { OrderFilledEvent } from "../../domain/events/order-filled-event";
 
 export class OrderFilledPublisher {
   @inject("book")
   private readonly book!: Book;
   @inject("queue")
-  private readonly queue!: RabbitMQAdapter;
+  private readonly queue!: Queue;
 
   constructor() {
     this.book.register(OrderFilledEvent, this.handle.bind(this))
