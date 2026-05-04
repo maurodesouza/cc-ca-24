@@ -2,9 +2,9 @@ POST http://localhost:4157/deposit HTTP/1.1
 content-type: application/json
 
 {
-  "accountId": "d2d8cf0d-238b-4c04-a5ca-b850b8fb10e9",
+  "accountId": "c0c235c6-3343-4696-9033-6f4e3bf9e8c7",
   "assetId": "BTC",
-  "quantity": 43000
+  "quantity": 1000000
 }
 
 ###
@@ -13,8 +13,20 @@ POST http://localhost:4157/withdraw HTTP/1.1
 content-type: application/json
 
 {
-  "accountId": "d2d8cf0d-238b-4c04-a5ca-b850b8fb10e9",
+  "accountId": "c0c235c6-3343-4696-9033-6f4e3bf9e8c7",
   "assetId": "BTC",
   "quantity": 115000
 }
 
+###
+
+POST http://localhost:4157/place-order HTTP/1.1
+content-type: application/json
+
+{
+  "accountId": "c0c235c6-3343-4696-9033-6f4e3bf9e8c7",
+  "marketId": "BTC-USD",
+  "side": "sell",
+  "quantity": 24,
+  "price": 10
+}

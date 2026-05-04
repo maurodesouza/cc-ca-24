@@ -1,2 +1,7 @@
-GET http://localhost:4159/accounts/160c35a3-6075-4f24-8ef8-7025ed3433f4 HTTP/1.1
+GET http://localhost:4159/accounts/c0c235c6-3343-4696-9033-6f4e3bf9e8c7 HTTP/1.1
+content-type: application/json
+
+###
+
+GET http://localhost:4159/depth/BTC-USD HTTP/1.1
 content-type: application/json
