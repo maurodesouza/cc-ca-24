@@ -28,7 +28,8 @@ async function main() {
 
   await Promise.all([
     queue.setup("account.events", "order.account.created", { routingKey: "account.created", type: "topic" }),
-    queue.setup("account.events", "projection.account.created", { routingKey: "account.created", type: "topic" })
+    queue.setup("account.events", "projection.account.created", { routingKey: "account.created", type: "topic" }),
+    queue.setup("balance.events", "projection.balance.updated", { routingKey: "balance.updated", type: "topic" }),
   ]);
 
   Registry.getInstance().register("http-server", httpServer);

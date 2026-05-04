@@ -15,7 +15,7 @@ export type AccountWithBalanceDTO = {
 
 export interface AccountWithBalanceRepository {
   save(account: AccountWithBalanceDTO): Promise<void>;
-  update(account: AccountWithBalanceDTO): Promise<void>;
+  updateBalances(accountId: string, balances: BalanceDTO[]): Promise<void>;
   getById(accountId: string): Promise<AccountWithBalanceDTO>;
 }
 
@@ -24,8 +24,8 @@ export class AccountWithBalanceRepositoryMongo implements AccountWithBalanceRepo
     await AccountWithBalance.create(account);
   }
 
-  async update(account: AccountWithBalanceDTO): Promise<void> {
-    await AccountWithBalance.updateOne({ accountId: account.accountId }, account);
+  async updateBalances(accountId: string, balances: BalanceDTO[]): Promise<void> {
+    await AccountWithBalance.updateOne({ accountId }, { $set: { balance: balances } });
   }
 
   async getById(accountId: string): Promise<AccountWithBalanceDTO> {
