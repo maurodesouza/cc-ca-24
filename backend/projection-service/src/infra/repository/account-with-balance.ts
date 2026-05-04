@@ -1,4 +1,4 @@
-import AccountWithBalance from "../models/account-with-balance";
+import { AccountWithBalance } from "../models/account-with-balance";
 
 export type BalanceDTO = {
   assetId: string;

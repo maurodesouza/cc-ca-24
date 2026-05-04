@@ -38,6 +38,4 @@ const AccountWithBalanceSchema = new Schema(
   }
 );
 
-const AccountWithBalance = model('AccountWithBalance', AccountWithBalanceSchema);
-
-export default AccountWithBalance;
+export const AccountWithBalance = model('AccountWithBalance', AccountWithBalanceSchema);
