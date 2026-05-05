@@ -1,6 +1,6 @@
 # Clean Code, Clean Architecture Course Project
 
-This repository contains the code developed during a [course](https://www.branas.io/formacoes/arquitetura-de-software) focused on **Clean Code** and **Clean Architecture** principles applied to a distributed trading system.
+This repository contains the code developed during the **Clean Code / Clean Architecture, class 24** course from [Branas.io](https://www.branas.io/formacoes/arquitetura-de-software), focused on **Clean Code** and **Clean Architecture** principles applied to a distributed trading system.
 
 The project explores topics such as:
 
